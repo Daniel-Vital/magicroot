@@ -4,9 +4,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="Daniel-Vital",
+    name="magicroot",
     version="0.0.1",
-    author="Example Author",
+    author="Daniel-Vital",
     author_email="author@example.com",
     description="A small example package",
     long_description=long_description,
