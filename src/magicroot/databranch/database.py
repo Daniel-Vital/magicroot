@@ -10,7 +10,7 @@ class Database:
     def __init__(self, path, sources=None, tables_folder='01 Tabelas', analysis_folder='02 Análises', csv_delimiter=';',
                  csv_decimal=','):
         """
-
+        Creates a Database object
         :param path: Location to save analysis, intermediary tables and fast access tables
         :param sources: Dictionary with all the inputs to be considered in the DataFrame
         :param tables_folder: Name of the folder where the tables will be stored
@@ -30,6 +30,7 @@ class Database:
 
         self.config = sources
         self.tables = {}
+        self.__reports = {}
 
     def __getitem__(self, item):
         return self.tables[item]
@@ -72,6 +73,12 @@ class Database:
             decimal=self.__csv_decimal,
             **kwargs
         )
+
+    def __check_if_report_exists(self):
+        pass
+
+    def __report(self, table_name, analysis_name, n_rows):
+        pass
 
     @property
     def lib_path(self):
