@@ -30,7 +30,7 @@ class Database:
 
         self.config = sources
         self.tables = {}
-        self.__reports = {}
+        self.__report = pd.DataFrame({'table_name': [], 'analysis_name': [], 'n_rows': []})
 
     def __getitem__(self, item):
         return self.tables[item]
@@ -73,12 +73,20 @@ class Database:
             decimal=self.__csv_decimal,
             **kwargs
         )
+        self.__append_to_report(table_name, analysis_name, len(df))
 
-    def __check_if_report_exists(self):
-        pass
-
-    def __report(self, table_name, analysis_name, n_rows):
-        pass
+    def __append_to_report(self, table_name, analysis_name, n_rows, **kwargs):
+        self.__report = self.__report.append(
+            {'table_name': table_name, 'analysis_name': analysis_name, 'n_rows': n_rows},
+            ignore_index=True
+        )
+        self.save_table(self.__report, 'report')
+        self.__report.to_csv(
+            os.path.join(self.analysis_path, 'report.csv'),
+            sep=self.__csv_delimiter,
+            decimal=self.__csv_decimal,
+            **kwargs
+        )
 
     @property
     def lib_path(self):
