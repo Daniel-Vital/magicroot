@@ -22,7 +22,7 @@ class DatabaseSources:
     }
 
     def __init__(
-            self, supported_extensions=None, folders=None, default_configs=None,
+            self, supported_extensions=None, folders=None, default_configs=None, fast_access_lib_ref=None
     ):
         """
         In initialization every piece of data is saved in the appropriate place
@@ -51,6 +51,7 @@ class DatabaseSources:
         self.supported_extensions = supported_extensions or self.__default_supported_extensions
         self.folders = folders
         self.default_configs = {**{extension: {} for extension in self.supported_extensions}, **default_configs}
+        self.fast_access_lib_ref = fast_access_lib_ref
 
     @property
     def list(self):
@@ -84,13 +85,27 @@ class DatabaseSources:
                     tables['specific_configs'].append({})
         return tables
 
-    @staticmethod
-    def __mark_in_fast_lib(df):
+    def __mark_in_fast_lib(self, df):
+        if ((df['folder'] == self.fast_access_lib_ref) & (df['extension'] != '.ftr')).any():
+            raise FileExistsError(f'Fast access lib {self.fast_access_lib_path} should only contain .ftr files')
+
+        filter_in_fast_lib = (df['folder'] == self.fast_access_lib_ref)
+
+        df.loc[
+            df['name'].isin(df.loc[filter_in_fast_lib, 'name']),
+            'in_fast_lib'
+        ] = True
         return df
 
-    @staticmethod
-    def __mark_database_ref(df):
+    def __mark_database_ref(self, df):
+
+        filter_in_fast_lib = (df['folder'] == self.fast_access_lib_ref)
         df['database_ref'] = df['name']
+        df.loc[
+            df['name'].isin(df.loc[filter_in_fast_lib, 'name']) & (~filter_in_fast_lib),
+            'database_ref'
+        ] = df['folder'] + '/' + df['name']
+
         df['n'] = df.index + 1
         df = df.set_index('database_ref')
         return df
@@ -117,6 +132,11 @@ class DatabaseSources:
             **self.get_config(database_ref)
         )
 
+    def is_source(self, database_ref):
+        pass
 
+    @property
+    def fast_access_lib_path(self):
+        return self.folders[self.fast_access_lib_ref]
 
 

@@ -80,3 +80,6 @@ class Table(pd.DataFrame):
 
     def run_duplicated_index_analysis(self):
         return {'duplicated index': self[self.index.duplicated()]}
+
+    def set_index(self, *args, **kwargs):
+        return Table(name=self.name, df=super(Table, self).set_index(*args, **kwargs))

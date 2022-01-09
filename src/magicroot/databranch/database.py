@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import datetime as dt
 from .database_structures.__table import Table
 from .database_structures.__sources import DatabaseSources as Sources
 from .. import fileleaf as fl
@@ -11,7 +12,7 @@ class Database:
     Database object is used to handle different databases read from diverse type of sources
     """
 
-    def __init__(self, path, sources=None, tables_folder='01 Tabelas', analysis_folder='02 Análises', csv_delimiter=';',
+    def __init__(self, path, tables_folder='01 Tabelas', analysis_folder='02 Análises', csv_delimiter=';',
                  csv_decimal=',', folders=None, **kwargs):
         """
         Creates a Database object
@@ -32,14 +33,14 @@ class Database:
         self.__csv_delimiter = csv_delimiter
         self.__csv_decimal = csv_decimal
 
-        self.config = sources
         self.tables = Sources(
             folders={**folders, 'internal lib': self.lib_path},
+            fast_access_lib_ref='internal lib',
             **kwargs
         )
         self.loaded_tables = {}
         self.dictionaries = {}
-        self.__report = pd.DataFrame({'table_name': [], 'analysis_name': [], 'n_rows': []})
+        self.__report = pd.DataFrame({'date': [], 'table_name': [], 'analysis_name': [], 'n_rows': []})
 
     def __getitem__(self, item):
         if item not in self.loaded_tables:
@@ -57,15 +58,14 @@ class Database:
         del self.loaded_tables[table_name]
         return df
 
-    def create_fast_access_library(self, tables=None):
+    def save_to_fast_access_lib(self, tables=None):
         """
         Creates copies of the tables in a binary format for fast access
         :return: None
         """
-        for table in self.config:
-            if tables is None or table in tables:
-                df = pd.read_csv(**self.config[table])
-                self.save_table(df, table)
+        tables = [tables] if type(tables) == str else tables
+        for table in tables:
+            self.save_table(self[table], table)
 
     @staticmethod
     def __create_dir(path, name):
@@ -103,7 +103,7 @@ class Database:
 
     def __append_to_report(self, table_name, analysis_name, n_rows, **kwargs):
         self.__report = self.__report.append(
-            {'table_name': table_name, 'analysis_name': analysis_name, 'n_rows': n_rows},
+            {'date': dt.datetime.now(), 'table_name': table_name, 'analysis_name': analysis_name, 'n_rows': n_rows},
             ignore_index=True
         )
         self.save_table(self.__report, 'report')
@@ -181,7 +181,6 @@ class Database:
         replace_dicionary = {}
         for column in key_columns:
             replace_dicionary_2 = {}
-
 
         return self[from_table].replace(self[with_table][key_columns].to_dic())
 
