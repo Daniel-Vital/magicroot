@@ -13,9 +13,7 @@ def change_file_extension(path, new_extension):
     :param new_extension: extension to give the file
     :return: None
     """
-    head, tail = ntpath.split(path)
-    tail = tail or ntpath.basename(path)
-    file_name, extension = os.path.splitext(tail)
+    head, file_name, extension = split_path(path)
     shutil.copy2(path, os.path.join(head, file_name + new_extension))
 
 
@@ -34,4 +32,24 @@ def unzip_file(path, to=None):
     with zipfile.ZipFile(path, "r") as zip_ref:
         zip_ref.extractall(to)
 
+
+def split_path(path):
+    """
+    Returns the parts (base_path, file_name, extension) from a path
+    :param path: path to evaluate
+    Example
+    >>> r"C:/Users/some_user/Documents/some_file.zip"
+    :return: parts of file
+    Example
+    base_path
+     >>> r"C:/Users/some_user/Documents/"
+    file_name
+    >>> "some_file"
+    extension
+    >>> ".zip"
+    """
+    base_path, tail = ntpath.split(path)
+    tail = tail or ntpath.basename(path)
+    file_name, extension = os.path.splitext(tail)
+    return base_path, file_name, extension
 
