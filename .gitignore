@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 # my files
-tests/local_data.py
+local_data.py
