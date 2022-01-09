@@ -2,5 +2,5 @@
 
 # some super secret data
 
-# more secret data
+# less secret data
 
