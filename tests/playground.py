@@ -32,5 +32,7 @@ df = df_cob.loc[df_cob['RAMO'] == 34, ['COBERTURA', 'DESCRITIVO']].drop_duplicat
 
 df_cob = db['FM_RAMOS']
 
-print(df)
+print(db)
+
+print(len(db))
 

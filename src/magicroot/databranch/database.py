@@ -67,6 +67,20 @@ class Database:
     def __setitem__(self, key, value):
         self.loaded_tables[key] = Table(key, df=value)
 
+    def __len__(self):
+        """
+        The length of the database is defined as the number of loadable tables
+        :return: len of database
+        """
+        return self.tables.list.__len__()
+
+    def __str__(self):
+        """
+        When printed the database will show the loadable tables dataframe
+        :return: string of the loadable tables dataframe
+        """
+        return self.tables.list.__str__()
+
     def load(self, table_name):
         self.loaded_tables[table_name] = Table(df=self.tables.get_dataframe(table_name), name=table_name)
 
