@@ -22,7 +22,8 @@ class DatabaseSources:
     }
 
     def __init__(
-            self, supported_extensions=None, folders=None, default_configs=None, fast_access_lib_ref=None
+            self, supported_extensions=None, folders=None, default_configs=None, fast_access_lib_ref=None,
+            column_types=None
     ):
         """
         In initialization every piece of data is saved in the appropriate place
@@ -51,6 +52,7 @@ class DatabaseSources:
         self.supported_extensions = supported_extensions or self.__default_supported_extensions
         self.folders = folders
         self.default_configs = {**{extension: {} for extension in self.supported_extensions}, **(default_configs or {})}
+        self.default_configs['.csv']['dtype'] = column_types
         self.fast_access_lib_ref = fast_access_lib_ref
 
     @property

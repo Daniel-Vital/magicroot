@@ -21,6 +21,7 @@ class Database:
                  analysis_folder='02 Análises',
                  csv_delimiter=';',
                  csv_decimal=',',
+                 column_types=None,
                  **kwargs):
         """
         Creates a Database object
@@ -33,6 +34,9 @@ class Database:
         :param analysis_folder: Name of the folder where the analysis will be stored
         :param csv_delimiter: Delimiter to be used in .csv outputs
         :param csv_decimal: Decimal character to be used in .csv outputs
+        :param column_types: Define database wide column types to be read correctly from csvs
+        Example:
+        >>> {'some_column': int, 'other_column': str}
         """
         self.__path = path
 
@@ -45,9 +49,10 @@ class Database:
         self.__csv_decimal = csv_decimal
 
         self.tables = Sources(
-            folders={**folders, 'internal lib': self.lib_path},
-            fast_access_lib_ref='internal lib',
+            folders={**folders, fast_access_lib_ref: self.lib_path},
+            fast_access_lib_ref=fast_access_lib_ref,
             default_configs=default_configs,
+            column_types=column_types,
             **kwargs
         )
         self.loaded_tables = {}
