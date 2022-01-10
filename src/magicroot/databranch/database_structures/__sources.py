@@ -50,7 +50,7 @@ class DatabaseSources:
         """
         self.supported_extensions = supported_extensions or self.__default_supported_extensions
         self.folders = folders
-        self.default_configs = {**{extension: {} for extension in self.supported_extensions}, **default_configs}
+        self.default_configs = {**{extension: {} for extension in self.supported_extensions}, **(default_configs or {})}
         self.fast_access_lib_ref = fast_access_lib_ref
 
     @property

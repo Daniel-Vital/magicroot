@@ -12,12 +12,23 @@ class Database:
     Database object is used to handle different databases read from diverse type of sources
     """
 
-    def __init__(self, path, tables_folder='01 Tabelas', analysis_folder='02 Análises', csv_delimiter=';',
-                 csv_decimal=',', folders=None, **kwargs):
+    def __init__(self,
+                 path,
+                 folders=None,
+                 default_configs=None,
+                 fast_access_lib_ref=None,
+                 tables_folder='01 Tabelas',
+                 analysis_folder='02 Análises',
+                 csv_delimiter=';',
+                 csv_decimal=',',
+                 **kwargs):
         """
         Creates a Database object
-        :param path: Location to save analysis, intermediary tables and fast access tables
-        :param sources: Dictionary with all the inputs to be considered in the DataFrame
+        :param path: Location of the database data, should be empty or have a previously created database
+        will save analysis, intermediary tables and fast access tables on this table
+        :param folders: Dictionary with all the inputs to be considered in the DataFrame
+        Example:
+        >>> {'some_folder_nickname': r"C:/Users/some_user/Documents/some_folder"}
         :param tables_folder: Name of the folder where the tables will be stored
         :param analysis_folder: Name of the folder where the analysis will be stored
         :param csv_delimiter: Delimiter to be used in .csv outputs
