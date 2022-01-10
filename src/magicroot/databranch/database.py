@@ -284,3 +284,14 @@ class Database:
         :return:
         """
         self[to_table] = self[to_table].replace(self.dictionaries[with_name])
+
+    def print_head_of(self, table_name, nrows=10):
+        """
+        Prints the first rows (nrows) of a table (table_name)
+        :param table_name: table to print
+        :param nrows: number rows to print
+        :return: None
+        """
+        path = self.tables.get_path(table_name)
+        fl.print_file_head(path, nrows)
+

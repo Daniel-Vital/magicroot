@@ -53,3 +53,14 @@ def split_path(path):
     file_name, extension = os.path.splitext(tail)
     return base_path, file_name, extension
 
+
+def print_file_head(path, nrows=10):
+    """
+    Prints the first rows (nrows) of a file (path)
+    :param path: file to print
+    :param nrows: number rows to print
+    :return: None
+    """
+    with open(path) as file:
+        head = [next(file) for _ in range(nrows)]
+    print(head)
