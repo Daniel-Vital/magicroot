@@ -16,7 +16,7 @@ class Database:
                  path,
                  folders=None,
                  default_configs=None,
-                 fast_access_lib_ref=None,
+                 fast_access_lib_ref='Internal Lib',
                  tables_folder='01 Tabelas',
                  analysis_folder='02 Análises',
                  csv_delimiter=';',
