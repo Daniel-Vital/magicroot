@@ -47,6 +47,7 @@ class Database:
         self.tables = Sources(
             folders={**folders, 'internal lib': self.lib_path},
             fast_access_lib_ref='internal lib',
+            default_configs=default_configs,
             **kwargs
         )
         self.loaded_tables = {}
