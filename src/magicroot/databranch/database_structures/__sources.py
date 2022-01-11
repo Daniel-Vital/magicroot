@@ -77,11 +77,16 @@ class DatabaseSources:
             for file in os.listdir(dir):
                 path = os.path.join(dir, file)
                 _, name, extension = fl.split_path(path)
+                try:
+                    size = os.path.getsize(path) / 1000000
+                except FileNotFoundError:
+                    size = None
+
                 if extension in self.supported_extensions:
                     tables['database_ref'].append('-')
                     tables['name'].append(name)
                     tables['extension'].append(extension)
-                    tables['size_MB'].append(os.path.getsize(path) / 1000000)
+                    tables['size_MB'].append(size)
                     tables['in_fast_lib'].append(False)
                     tables['folder'].append(folder_name)
                     tables['specific_configs'].append({})
