@@ -36,3 +36,7 @@ print(db)
 
 print(len(db))
 
+print('---------------------------------------')
+
+print(db.peak('extractions/FM_RAMOS'))
+

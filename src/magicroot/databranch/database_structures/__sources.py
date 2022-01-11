@@ -128,10 +128,12 @@ class DatabaseSources:
             self.supported_extensions[extension]['path']: self.get_path(database_ref)
         }
 
-    def get_dataframe(self, database_ref):
+    def get_dataframe(self, database_ref, overwrite_configs=None):
         extension = self.list.loc[database_ref, 'extension']
+        overwrite_configs = overwrite_configs or {}
+        considered_configs = {**self.get_config(database_ref), **overwrite_configs}
         return self.supported_extensions[extension]['function'](
-            **self.get_config(database_ref)
+            **considered_configs
         )
 
     def is_source(self, database_ref):

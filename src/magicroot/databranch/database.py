@@ -309,3 +309,11 @@ class Database:
         path = self.tables.get_path(table_name)
         fl.print_file_head(path, nrows)
 
+    def peak(self, table_name, nrows=100):
+        """
+        Returns a dataframe with the first lines of the file
+        :param table_name: Database ref of the table to be read
+        :param nrows: Number of rows to read
+        :return: The respective Dataframe
+        """
+        return self.tables.get_dataframe(table_name, {'nrows': nrows})
