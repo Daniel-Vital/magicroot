@@ -65,7 +65,7 @@ class Database:
         return self.loaded_tables[item]
 
     def __setitem__(self, key, value):
-        self.loaded_tables[key] = Table(key, df=value)
+        self.loaded_tables[key] = Table(name=key, df=value)
 
     def __len__(self):
         """
