@@ -1,42 +1,37 @@
-import sys
-import os
-
-from src import magicroot as mr
-from localdata.folders import *
-
 import pandas as pd
 
-pd.set_option('display.max_rows', None)
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', None)
-pd.set_option('display.max_colwidth', None)
+from config import *
 
-# some public data
-
-print(folder_extractions)
-
-db = mr.Database(
-    path=folder_database,
-    folders={'extractions': folder_extractions},
-    default_configs={'.csv': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1'}},
-    column_types={'COBERTURA': str}
-)
 
 print(db.tables.list)
 
-df_cob = db['FM_COBERTURAS']
 
-df = df_cob.loc[df_cob['RAMO'] == 34, ['COBERTURA', 'DESCRITIVO']].drop_duplicates().sort_values('COBERTURA')
+# print(db['FM_RAMOS'])
 
-# 17.0                                CHOQUE OU IMPACTO DE VEÍCULOS TERRESTRES
+db.save_analysis(
+    table_name='FM_RAMOS',
+    analysis_name='TESTE',
+    df=db['FM_RAMOS'].nulls
+)
 
-df_cob = db['FM_RAMOS']
 
-print(db)
+print(db['FM_RAMOS'].analyse.nulls)
 
-print(len(db))
 
-print('---------------------------------------')
+def all_duplicated(df):
+    """
+    Creates Dataframe with all lines which are repeated in all rows
+    :return: DataFrame with all lines with all repeated rows
+    """
+    return df[df.duplicated(keep=False)]
 
-print(db.peak('extractions/FM_RAMOS'))
+
+db.define_analysis(all_duplicated)
+
+print(db['FM_RAMOS'].analyse.all_duplicated())
+
+
+
+# db['some_table'].analyse.nulls()
+
 

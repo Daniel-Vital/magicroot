@@ -4,6 +4,7 @@ import os
 import datetime as dt
 from .database_structures.__table import Table
 from .database_structures.__sources import DatabaseSources as Sources
+from .database_structures.__analysis_book import AnalysisBook
 from .. import fileleaf as fl
 
 
@@ -57,7 +58,11 @@ class Database:
         )
         self.loaded_tables = {}
         self.dictionaries = {}
-        self.__report = pd.DataFrame({'date': [], 'table_name': [], 'analysis_name': [], 'n_rows': []})
+        self.__analysis_book = AnalysisBook()
+        try:
+            self.__report = self['report']
+        except KeyError:
+            self.__report = pd.DataFrame({'date': [], 'table_name': [], 'analysis_name': [], 'n_rows': []})
 
     def __getitem__(self, item):
         if item not in self.loaded_tables:
@@ -82,12 +87,20 @@ class Database:
         return self.tables.list.__str__()
 
     def load(self, table_name):
-        self.loaded_tables[table_name] = Table(df=self.tables.get_dataframe(table_name), name=table_name)
+        analysis_book = self.__analysis_book.set(df=Table(self.tables.get_dataframe(table_name), name=table_name),
+                                                 save_function=self.save_analysis)
+        self.loaded_tables[table_name] = Table(df=self.tables.get_dataframe(table_name),
+                                               name=table_name,
+                                               analysis_book=analysis_book
+                                               )
 
     def unload(self, table_name):
         df = self[table_name]
         del self.loaded_tables[table_name]
         return df
+
+    def define_analysis(self, func):
+        self.__analysis_book.define_analysis(func)
 
     def save_to_fast_access_lib(self, tables=None):
         """

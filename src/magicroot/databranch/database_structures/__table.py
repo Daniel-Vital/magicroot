@@ -1,13 +1,15 @@
 import pandas as pd
 import os
 from ... import fileleaf as fl
+from .__analysis_book import AnalysisBook
+
 
 
 class Table(pd.DataFrame):
     """
     Extension of pandas Dataframes with the necessary functionalities
     """
-    def __init__(self, df=None, path=None, name=None, **kwargs):
+    def __init__(self, df=None, path=None, name=None, analysis_book=None, **kwargs):
         """
         Creates a table from a path or a Dataframe
         :param df: Dataframe from which to build table
@@ -26,6 +28,7 @@ class Table(pd.DataFrame):
 
         super().__init__(df)
         self.name = name
+        self.analyse = analysis_book
 
     @property
     def nulls(self):
