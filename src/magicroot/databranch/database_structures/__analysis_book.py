@@ -1,15 +1,12 @@
 import pandas as pd
+from .__default_analysis import DefaultAnalysis
 
 
 class AnalysisBook:
     def __init__(self):
-        # self.analysis = {nulls}
-
         self.df = pd.DataFrame()
         self.save_function = lambda df, table_name, analysis_name: 0
-
-        #for analysis in self.analysis:
-        #    self.__setattr__(analysis.__name__, analysis)
+        self.__set_default_analysis()
 
     def set(self, df, save_function):
         self.df = df
@@ -17,19 +14,29 @@ class AnalysisBook:
         return self
 
     def define_analysis(self, func):
+        name = func.__name__
+        func = self.analysis(func)
+        self.__setattr__(name, func)
+
+    def analysis(self, func):
+        """
+
+        :param func:
+        :return:
+        """
         def wrapper(*args, **kwargs):
             rv = func(self.df, *args, **kwargs)
             self.save_function(df=rv, table_name=self.df.name, analysis_name=func.__name__)
             return rv
+        return wrapper
 
-        self.__setattr__(func.__name__, wrapper)
+    def __set_default_analysis(self):
+        method_list = [
+            DefaultAnalysis().__getattribute__(method)
+            for method in dir(DefaultAnalysis) if method.startswith('__') is False
+        ]
 
-    @property
-    def nulls(self):
-        """
-        Creates Dataframe with all lines with any null value
-        :return: DataFrame with all lines with any null value
-        """
-        df = self.df[self.df.isnull().any(axis=1)]
-        self.save_function(df=df, table_name=self.df.name, analysis_name='nulls')
-        return df
+        for method in method_list:
+            self.define_analysis(method)
+
+
