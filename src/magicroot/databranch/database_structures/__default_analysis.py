@@ -46,3 +46,14 @@ class DefaultAnalysis:
         return df.loc[
                :, [column for n in compute_map for column in n[0]] + by
                ].groupby(by).agg({column: n[1] for n in compute_map for column in n[0]})
+
+    @staticmethod
+    def is_negative(df, columns):
+        """
+        Creates Dataframe with all lines which are negative in the given columns
+        :param df: Dataframe to be evaluated
+        :param columns: Columns to be evaluated
+        :return: DataFrame with all lines with all repeated rows
+        """
+        return df.loc[(df[columns] < 0).any(axis=1)]
+

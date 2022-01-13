@@ -2,9 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import datetime as dt
-from .database_structures.__table import Table
-from .database_structures.__sources import DatabaseSources as Sources
-from .database_structures.__analysis_book import AnalysisBook
+from .database_structures import *
 from .. import fileleaf as fl
 
 
@@ -41,8 +39,7 @@ class Database:
         """
         self.__path = path
 
-        self.__create_dir(self.__path, tables_folder)
-        self.__create_dir(self.__path, analysis_folder)
+        fl.create_folders_missing(self.__path, [tables_folder, analysis_folder])
 
         self.__tables_folder = tables_folder
         self.__analysis_folder = analysis_folder
@@ -59,15 +56,16 @@ class Database:
         self.loaded_tables = {}
         self.dictionaries = {}
         self.__analysis_book = AnalysisBook()
+        self.__load_report()
+
+    def __load_report(self):
         try:
             self.__report = self['report']
         except KeyError:
             self.__report = pd.DataFrame({'date': [], 'table_name': [], 'analysis_name': [], 'n_rows': []})
 
     def __getitem__(self, item):
-        if item not in self.loaded_tables:
-            self.load(item)
-        return self.loaded_tables[item]
+        return self.load(item)
 
     def __setitem__(self, key, value):
         self.loaded_tables[key] = Table(name=key, df=value)
@@ -87,12 +85,14 @@ class Database:
         return self.tables.list.__str__()
 
     def load(self, table_name):
-        analysis_book = self.__analysis_book.set(df=Table(self.tables.get_dataframe(table_name), name=table_name),
-                                                 save_function=self.save_analysis)
-        self.loaded_tables[table_name] = Table(df=self.tables.get_dataframe(table_name),
-                                               name=table_name,
-                                               analysis_book=analysis_book
-                                               )
+        if table_name not in self.loaded_tables:
+            df = self.tables.get_dataframe(table_name)
+            table = Table(df=df, name=table_name)
+            analysis_book = self.__analysis_book.set(table=table, save_function=self.save_analysis)
+            table = Table(df=df, name=table_name, analysis_book=analysis_book)
+
+            self.loaded_tables[table_name] = table
+        return self.loaded_tables[table_name]
 
     def unload(self, table_name):
         df = self[table_name]
@@ -111,16 +111,11 @@ class Database:
         for table in tables:
             self.save_table(self[table], table)
 
-    @staticmethod
-    def __create_dir(path, name):
-        if name not in os.listdir(path):
-            os.mkdir(os.path.join(path, name))
-
     def save_table(self, df, name):
         df.to_feather(os.path.join(self.lib_path, name + '.ftr'))
 
     def save_analysis(self, df, table_name, analysis_name, cap_rows=100000, **kwargs):
-        self.__create_dir(self.analysis_path, table_name)
+        fl.create_folders_missing(self.analysis_path, table_name)
         df.head(cap_rows).to_csv(
             os.path.join(self.analysis_path, table_name, analysis_name + '.csv'),
             sep=self.__csv_delimiter,
@@ -141,30 +136,37 @@ class Database:
             for analysis in dic[table]:
                 self.save_analysis(df=dic[table][analysis], table_name=table, analysis_name=analysis)
 
-    def run_basic_analysis(self, table_name, df=None):
-        df = Table(df, name=table_name) if df is not None else self[table_name]
-        self.save_analysis_from_dic(df.run_basic_analysis())
-
     def __append_to_report(self, table_name, analysis_name, n_rows, **kwargs):
         self.__report = self.__report.append(
             {'date': dt.datetime.now(), 'table_name': table_name, 'analysis_name': analysis_name, 'n_rows': n_rows},
             ignore_index=True
         )
         self.save_table(self.__report, 'report')
-        self.__report.to_csv(
+        self.__report.sort_values('date', ascending=False).to_csv(
             os.path.join(self.analysis_path, 'report.csv'),
             sep=self.__csv_delimiter,
             decimal=self.__csv_decimal,
             **kwargs
         )
 
-    def replace_from_dataframe(self, df):
+    def print_head_of(self, table_name, nrows=10):
         """
-        This function is intended to replace
-        :param df:
-        :return:
+        Prints the first rows (nrows) of a table (table_name)
+        :param table_name: table to print
+        :param nrows: number rows to print
+        :return: None
         """
-        pass
+        path = self.tables.get_path(table_name)
+        fl.print_file_head(path, nrows)
+
+    def peak(self, table_name, nrows=100, **kwargs):
+        """
+        Returns a dataframe with the first lines of the file
+        :param table_name: Database ref of the table to be read
+        :param nrows: Number of rows to read
+        :return: The respective Dataframe
+        """
+        return self.tables.get_dataframe(table_name, {'nrows': nrows, **kwargs})
 
     @property
     def lib_path(self):
@@ -181,6 +183,8 @@ class Database:
 
         percentile_.__name__ = 'percentile_%s' % n
         return percentile_
+
+    # Not Implemented yet
 
     def replace_code_row(self, from_table, with_table, key_columns):
         """
@@ -222,6 +226,7 @@ class Database:
         'return'.
         :return: table the full keys (TABLE A from example)
         """
+        raise NotImplementedError
         replace_dicionary = {}
         for column in key_columns:
             replace_dicionary_2 = {}
@@ -255,6 +260,7 @@ class Database:
         :param prefix: prefix for created columns, default is 'CDesc' for Complete Description
         :return: table with the appropriate descriptions for graphs and reports (Table B)
         """
+        raise NotImplementedError
         df = self[from_table]
         for column in key_columns:
             description_column = key_columns[column]
@@ -293,7 +299,7 @@ class Database:
         :param description:
         :return:
         """
-        pass
+        raise NotImplementedError
 
     def apply_dictionary(self, with_name, to_table):
         """
@@ -310,23 +316,14 @@ class Database:
         :param to_table: name of table to which the dictionary will be applied
         :return:
         """
+        raise NotImplementedError
         self[to_table] = self[to_table].replace(self.dictionaries[with_name])
 
-    def print_head_of(self, table_name, nrows=10):
+    def replace_from_dataframe(self, df):
         """
-        Prints the first rows (nrows) of a table (table_name)
-        :param table_name: table to print
-        :param nrows: number rows to print
-        :return: None
+        This function is intended to replace
+        :param df:
+        :return:
         """
-        path = self.tables.get_path(table_name)
-        fl.print_file_head(path, nrows)
+        raise NotImplementedError
 
-    def peak(self, table_name, nrows=100):
-        """
-        Returns a dataframe with the first lines of the file
-        :param table_name: Database ref of the table to be read
-        :param nrows: Number of rows to read
-        :return: The respective Dataframe
-        """
-        return self.tables.get_dataframe(table_name, {'nrows': nrows})

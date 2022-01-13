@@ -4,29 +4,32 @@ from .__default_analysis import DefaultAnalysis
 
 class AnalysisBook:
     def __init__(self):
-        self.df = pd.DataFrame()
+        self.table = pd.DataFrame()
         self.save_function = lambda df, table_name, analysis_name: 0
         self.__set_default_analysis()
 
-    def set(self, df, save_function):
-        self.df = df
+    def set(self, table, save_function):
+        self.table = table
         self.save_function = save_function
         return self
 
     def define_analysis(self, func):
         name = func.__name__
-        func = self.analysis(func)
+        func = self.__analysis(func)
         self.__setattr__(name, func)
 
-    def analysis(self, func):
+    def all(self):
+        raise NotImplementedError
+
+    def __analysis(self, func):
         """
 
         :param func:
         :return:
         """
         def wrapper(*args, **kwargs):
-            rv = func(self.df, *args, **kwargs)
-            self.save_function(df=rv, table_name=self.df.name, analysis_name=func.__name__)
+            rv = func(self.table, *args, **kwargs)
+            self.save_function(df=rv, table_name=self.table.name, analysis_name=func.__name__)
             return rv
         return wrapper
 
@@ -38,5 +41,4 @@ class AnalysisBook:
 
         for method in method_list:
             self.define_analysis(method)
-
 

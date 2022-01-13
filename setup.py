@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="magicroot",
-    version="1.8.0",
+    version="1.8.1",
     author="Daniel-Vital",
     author_email="author@example.com",
     description="A small example package",

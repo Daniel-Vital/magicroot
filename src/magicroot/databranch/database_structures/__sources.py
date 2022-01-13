@@ -142,7 +142,7 @@ class DatabaseSources:
         )
 
     def is_source(self, database_ref):
-        pass
+        raise NotImplementedError
 
     @property
     def fast_access_lib_path(self):
