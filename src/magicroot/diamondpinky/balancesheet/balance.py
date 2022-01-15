@@ -4,7 +4,7 @@ A Class to handle the balance sheet
 """
 import pandas as pd
 
-from . import Balance_Sheet as Bal
+from . import balancesheet as Bal
 import logging as log
 
 log = log.getLogger('Balance')
