@@ -5,15 +5,15 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="magicroot",
-    version="1.8.1",
+    version="1.9.0",
     author="Daniel-Vital",
     author_email="author@example.com",
-    description="A small example package",
+    description="Python like magic",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/Daniel-Vital/magicroot",
     project_urls={
-        "Bug Tracker": "https://github.com/pypa/sampleproject/issues",
+        "Bug Tracker": "https://github.com/Daniel-Vital/magicroot/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
