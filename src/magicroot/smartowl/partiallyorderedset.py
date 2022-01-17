@@ -5,6 +5,9 @@ log.getLogger('magicroot.smartowl.partiallyorderedset').addHandler(log.NullHandl
 
 
 class PartiallyOrderedSet(Sorter):
+    """
+    Partially Ordered Set (Mathematical concept) structure
+    """
     def __init__(self, data):
         self._order = {}
         Sorter.__init__(self, data)
