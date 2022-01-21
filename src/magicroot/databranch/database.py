@@ -65,6 +65,8 @@ class Database:
             self.__report = pd.DataFrame({'date': [], 'table_name': [], 'analysis_name': [], 'n_rows': []})
 
     def __getitem__(self, item):
+        if type(item) is tuple:
+            return self.load(*item)
         return self.load(item)
 
     def __setitem__(self, key, value):
@@ -84,9 +86,9 @@ class Database:
         """
         return self.tables.list.__str__()
 
-    def load(self, table_name):
+    def load(self, table_name, overwrite_configs=None):
         if table_name not in self.loaded_tables:
-            df = self.tables.get_dataframe(table_name)
+            df = self.tables.get_dataframe(table_name, overwrite_configs)
             table = Table(df=df, name=table_name)
             analysis_book = self.__analysis_book.set(table=table, save_function=self.save_analysis)
             table = Table(df=df, name=table_name, analysis_book=analysis_book)
