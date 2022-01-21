@@ -1,9 +1,18 @@
 
 
-from src import magicroot as mr
 from logs import *
+from config import *
+
+
+
 
 log = log.getLogger('Main')
+
+df = db['FM_SINISTROS', {'on_bad_lines': 'skip'}]
+# df = db.tables.get_dataframe('FM_SINISTROS', overwrite_configs={'on_bad_lines': 'skip'})
+
+
+
 
 log.debug('01. Preprocesses the input data and transforms it into readable csv')
 df = mr.EventsDataFrame()
