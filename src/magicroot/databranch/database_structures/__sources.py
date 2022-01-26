@@ -55,6 +55,9 @@ class DatabaseSources:
         self.default_configs['.csv']['dtype'] = column_types
         self.fast_access_lib_ref = fast_access_lib_ref
 
+    def __str__(self):
+        return self.list.__str__()
+
     @property
     def list(self):
         tables = {
