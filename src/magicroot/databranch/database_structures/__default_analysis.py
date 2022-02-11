@@ -11,12 +11,15 @@ class DefaultAnalysis:
         return df[df.isnull().any(axis=1)]
 
     @staticmethod
-    def all_duplicated(df):
+    def duplicated(df, columns):
         """
-        Creates Dataframe with all lines which are repeated in all rows
+        Creates Dataframe with all lines which are repeated in all rows for the given columns,
+        if no columns are given evaluates repeated lines for all columns
+        :param df: Dataframe to be evaluated
+        :param columns: Columns to be evaluated
         :return: DataFrame with all lines with all repeated rows
         """
-        return df[df.duplicated(keep=False)]
+        return df[df.duplicated(keep=False)] if columns is None else df[df[columns].duplicated(keep=False)]
 
     @staticmethod
     def index_duplicated(df):
