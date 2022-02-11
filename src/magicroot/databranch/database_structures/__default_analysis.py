@@ -11,7 +11,7 @@ class DefaultAnalysis:
         return df[df.isnull().any(axis=1)]
 
     @staticmethod
-    def duplicated(df, columns):
+    def key_duplicated(df, columns):
         """
         Creates Dataframe with all lines which are repeated in all rows for the given columns,
         if no columns are given evaluates repeated lines for all columns
