@@ -1,10 +1,10 @@
 
-from .databranch import *
-from .diamondpinky import *
-from .fileleaf import *
-from .pysas import *
-from .gardeningtools import *
-from .smartowl import *
+from . import databranch
+from . import diamondpinky
+from . import fileleaf
+from . import pysas
+from . import gardeningtools
+from . import smartowl
 
 import logging
 logging.getLogger('magicroot').addHandler(logging.NullHandler())
