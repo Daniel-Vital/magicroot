@@ -13,7 +13,7 @@ pd.set_option('display.max_colwidth', None)
 
 # some public data
 
-db = mr.Database(
+db = mr.databranch.Database(
     path=folder_database,
     folders={
         'extractions': folder_extractions,
