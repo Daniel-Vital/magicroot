@@ -117,7 +117,7 @@ class DatabaseSources:
         ] = df['folder'] + '/' + df['name']
 
         df['n'] = df.index + 1
-        # df = df.set_index('database_ref')
+        df = df.set_index('database_ref')
         return df
 
     def get_path(self, database_ref):
@@ -150,7 +150,7 @@ class DatabaseSources:
         :param folder: folder to be evaluated
         :return: a list of the dataframe references of the sources in the given folder
         """
-        return self.list.reset_index().loc[self.list['folder'] == folder, 'database_ref'].to_list()
+        return self.list[self.list['folder'] == folder].index.to_list()
 
     def is_source(self, database_ref):
         raise NotImplementedError
