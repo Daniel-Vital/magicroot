@@ -17,9 +17,9 @@ class AnalysisBook:
 
     def __apply_save_function(self, func):
         """
-
-        :param func:
-        :return:
+        Applies a save function to all analysis
+        :param func: save function to be applied
+        :return: original function with the save function applied
         """
         if self.save_function is None:
             return func
