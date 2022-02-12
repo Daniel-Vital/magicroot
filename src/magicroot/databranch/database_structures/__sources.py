@@ -144,6 +144,14 @@ class DatabaseSources:
             **considered_configs
         )
 
+    def get_references(self, folder):
+        """
+
+        :param folder: folder to be evaluated
+        :return: a list of the dataframe references of the sources in the given folder
+        """
+        return self.list[self.list['folder'] == folder].index.to_list()
+
     def is_source(self, database_ref):
         raise NotImplementedError
 
