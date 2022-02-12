@@ -10,6 +10,7 @@ class Database:
     """
     Database object is used to handle different databases read from diverse type of sources
     """
+    default_analysis = DefaultAnalysis()
 
     def __init__(self,
                  path,
@@ -55,7 +56,7 @@ class Database:
         )
         self.loaded_tables = {}
         self.dictionaries = {}
-        self.__analysis_book = AnalysisBook()
+        # self.__analysis_book = AnalysisBook()
         self.__load_report()
 
     def __load_report(self):
@@ -89,9 +90,7 @@ class Database:
     def load(self, table_name, overwrite_configs=None):
         if table_name not in self.loaded_tables:
             df = self.tables.get_dataframe(table_name, overwrite_configs)
-            table = Table(df=df, name=table_name)
-            analysis_book = self.__analysis_book.set(table=table, save_function=self.save_analysis)
-            table = Table(df=df, name=table_name, analysis_book=analysis_book)
+            table = Table(df=df, name=table_name, save_function=self.save_analysis)
 
             self.loaded_tables[table_name] = table
         return self.loaded_tables[table_name]

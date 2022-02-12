@@ -1,14 +1,16 @@
 import pandas as pd
 import os
 from ... import fileleaf as fl
-from .__analysis_book import AnalysisBook
+from .__analysis_book import Analyser
 
 
 class Table(pd.DataFrame):
     """
     Extension of pandas Dataframes with the necessary functionalities
     """
-    def __init__(self, df=None, path=None, name=None, analysis_book=None, **kwargs):
+    analyse = Analyser()
+
+    def __init__(self, df=None, path=None, name=None, analysis_book=None, save_function=None, **kwargs):
         """
         Creates a table from a path or a Dataframe
         :param df: Dataframe from which to build table
@@ -27,7 +29,7 @@ class Table(pd.DataFrame):
 
         super().__init__(df)
         self.name = name
-        self.analyse = analysis_book
+        self.save = save_function
 
     def set_index(self, *args, **kwargs):
         return Table(name=self.name, df=super(Table, self).set_index(*args, **kwargs))

@@ -11,7 +11,7 @@ class DefaultAnalysis:
         return df[df.isnull().any(axis=1)]
 
     @staticmethod
-    def key_duplicated(df, columns):
+    def duplicated_columns(df, columns=None):
         """
         Creates Dataframe with all lines which are repeated in all rows for the given columns,
         if no columns are given evaluates repeated lines for all columns
@@ -19,10 +19,11 @@ class DefaultAnalysis:
         :param columns: Columns to be evaluated
         :return: DataFrame with all lines with all repeated rows
         """
-        return df[df.duplicated(keep=False)] if columns is None else df[df[columns].duplicated(keep=False)]
+        df_filter = df if columns is None else df[columns]
+        return df[df_filter.duplicated(keep=False)]
 
     @staticmethod
-    def index_duplicated(df):
+    def duplicated_index(df):
         """
         Creates Dataframe with all lines which are repeated in index
         :return: DataFrame with all lines with all repeated rows
@@ -51,12 +52,25 @@ class DefaultAnalysis:
                ].groupby(by).agg({column: n[1] for n in compute_map for column in n[0]})
 
     @staticmethod
-    def is_negative(df, columns):
+    def smaller_than_reference_columns(df, columns=None, reference=None):
+        """
+        Creates Dataframe with all lines which have values less than the given reference in the given columns
+        :param df: Dataframe to be evaluated
+        :param columns: Columns to be evaluated
+        :param reference: Value to compare to columns
+        :return: DataFrame with all the flagged lines
+        """
+        df_filter = df if columns is None else df[columns]
+        return df.loc[(df_filter < reference).any(axis=1)]
+
+    @staticmethod
+    def negative_columns(df, columns=None):
         """
         Creates Dataframe with all lines which are negative in the given columns
         :param df: Dataframe to be evaluated
         :param columns: Columns to be evaluated
-        :return: DataFrame with all lines with all repeated rows
+        :return: DataFrame with all the flagged lines
         """
-        return df.loc[(df[columns] < 0).any(axis=1)]
+        return DefaultAnalysis().smaller_than_reference_columns(df=df, columns=columns, reference=0)
+
 
