@@ -89,9 +89,7 @@ class Database:
     def load(self, table_name, overwrite_configs=None):
         if table_name not in self.loaded_tables:
             df = self.tables.get_dataframe(table_name, overwrite_configs)
-            table = Table(df=df, name=table_name)
-            analysis_book = AnalysisBook(table=table, save_function=self.save_analysis)
-            table = Table(df=df, name=table_name, analysis_book=analysis_book)
+            table = Table(df=df, name=table_name, save_function=self.save_analysis)
 
             self.loaded_tables[table_name] = table
         return self.loaded_tables[table_name]
@@ -102,7 +100,7 @@ class Database:
         return df
 
     def define_analysis(self, func):
-        raise NotImplementedError
+        self.__analysis_book.define_analysis(func)
 
     def save_to_fast_access_lib(self, tables=None):
         """
