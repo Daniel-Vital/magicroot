@@ -55,7 +55,7 @@ class Database:
         )
         self.loaded_tables = {}
         self.dictionaries = {}
-        self.__analysis_book = AnalysisBook()
+        # self.__analysis_book = AnalysisBook()
         self.__load_report()
 
     def __load_report(self):
@@ -90,7 +90,7 @@ class Database:
         if table_name not in self.loaded_tables:
             df = self.tables.get_dataframe(table_name, overwrite_configs)
             table = Table(df=df, name=table_name)
-            analysis_book = self.__analysis_book.set(table=table, save_function=self.save_analysis)
+            analysis_book = AnalysisBook(table=table, save_function=self.save_analysis)
             table = Table(df=df, name=table_name, analysis_book=analysis_book)
 
             self.loaded_tables[table_name] = table
@@ -102,7 +102,7 @@ class Database:
         return df
 
     def define_analysis(self, func):
-        self.__analysis_book.define_analysis(func)
+        raise NotImplementedError
 
     def save_to_fast_access_lib(self, tables=None):
         """

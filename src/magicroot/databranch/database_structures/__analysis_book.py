@@ -3,15 +3,17 @@ from .__default_analysis import DefaultAnalysis
 
 
 class AnalysisBook:
-    def __init__(self):
-        self.table = pd.DataFrame()
-        self.save_function = lambda df, table_name, analysis_name: 0
-        self.__set_default_analysis()
-
-    def set(self, table, save_function):
+    """
+    Picks the default tests and attaches a save function
+    Allows new tests to be defined
+    """
+    def __init__(self, table, save_function):
         self.table = table
         self.save_function = save_function
-        return self
+        self.__set_default_analysis()
+
+    def __get__(self, instance, owner):
+        pass
 
     def define_analysis(self, func):
         name = func.__name__
@@ -36,7 +38,7 @@ class AnalysisBook:
     def __set_default_analysis(self):
         method_list = [
             DefaultAnalysis().__getattribute__(method)
-            for method in dir(DefaultAnalysis) if method.startswith('__') is False
+            for method in dir(DefaultAnalysis) if not method.startswith('__')
         ]
 
         for method in method_list:
