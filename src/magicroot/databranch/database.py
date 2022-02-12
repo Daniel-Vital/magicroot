@@ -10,6 +10,7 @@ class Database:
     """
     Database object is used to handle different databases read from diverse type of sources
     """
+    default_analysis = DefaultAnalysis()
 
     def __init__(self,
                  path,

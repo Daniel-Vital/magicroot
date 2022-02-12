@@ -1,14 +1,14 @@
 import pandas as pd
 import os
 from ... import fileleaf as fl
-from .__analysis_book import AnalysisBook
+from .__analysis_book import Analyser
 
 
 class Table(pd.DataFrame):
     """
     Extension of pandas Dataframes with the necessary functionalities
     """
-    analyse = AnalysisBook()
+    analyse = Analyser()
 
     def __init__(self, df=None, path=None, name=None, analysis_book=None, save_function=None, **kwargs):
         """
