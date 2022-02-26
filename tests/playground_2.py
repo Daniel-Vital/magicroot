@@ -1,18 +1,16 @@
 
 
 from config import *
+import getpass
+import re
+import datetime as dt
+from src.magicroot.databranch.directorymanager.folder import *
 
-print(db.tables.get_references('extractions'))
-print('----------------------------------------------------')
-print(db['SAS_Risk_Factor_v2.00'].analyse)
-print('----------------------------------------------------')
-db['SAS_Risk_Factor_v2.00'].analyse.nulls()
-print('----------------------------------------------------')
+dm = DirectoriesManager(folder_database, folders)
+df = dm.data
+print(df)
+
+dm.save()
 
 
-def some_test(df):
-    return df
-
-
-db['SAS_Risk_Factor_v2.00'].analyse(func=some_test)
 
