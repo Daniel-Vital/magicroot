@@ -8,7 +8,12 @@ from .. import fileleaf as fl
 
 class Database:
     """
-    Database object is used to handle different databases read from diverse type of sources
+    The 'Database' is the center of the Databranch module, it aggregates all other structures,
+    and makes sure they work together.
+
+    A Database should be seen as a folder that stores and organizes all the requirements and all the backend logic of
+    the data manipulation.
+
     """
     default_analysis = DefaultAnalysis()
 
@@ -24,13 +29,44 @@ class Database:
                  column_types=None,
                  **kwargs):
         """
-        Creates a Database object
-        :param path: Location of the database data, should be empty or have a previously created database
-        will save analysis, intermediary tables and fast access tables on this table
+        The first step in working with a Database is to create a Database object.
+        For this the only requirement is to have a folder to store all the necessary tools and data
+
+
+        :param home: The location of the Database, should be empty directory or a directory of a previously created
+        Database.
+        Everything related to Database will be saved here so that on subsuquent runs everything is as left off.
+        Several subfolders will be created and deleted in this location. One should not store other files in this
+        location as the Database may delete, update or change them in ways that may be unpredictable to a user
+        unfamiliar with Databases.
+
+
+        :param configs_folder: Name of the folder where the Database 'configs' will be stored
+        This is the base folder of the Database and by default is named '00 Configs'.
+        It stores general information about the Database, everthing is stored in a human-readable .csv format to allow
+        changes to be done even if the Database is not running. Note that these configs are loaded at the start of
+        runtime and saved at the end, therfore changing them at runtime will have no effect in the Database.
+        Within the configs are stored several files, including
+        'general_configs.csv' this file stores general configs of the Database in csv
+        'sources.csv' This stores a list of sources for the Database
+
+
+        :param envirouments_folder: Name of the folder where the envirouments will be stored.
+        An enviroument is a base where to build new Data structures upon or 'processes' as we will
+        call them.
+        For example, if you will build table B from a given table A by a process you define, you may
+        wish to test this process for different versions of table A, maybe these versions are for different timeframes,
+        of one version is a subset of the real table.
+        The Database is prepared to work with three phases of processes.
+
+        The first phase is code building or development for this there is the 'dev' enviroument.
+
+
+
         :param folders: Dictionary with all the inputs to be considered in the DataFrame
         Example:
         >>> {'some_folder_nickname': r"C:/Users/some_user/Documents/some_folder"}
-        :param tables_folder: Name of the folder where the tables will be stored
+
         :param analysis_folder: Name of the folder where the analysis will be stored
         :param csv_delimiter: Delimiter to be used in .csv outputs
         :param csv_decimal: Decimal character to be used in .csv outputs
