@@ -21,11 +21,17 @@ db = mr.databranch.Database(
         'datawarehouse': folder_dw_tables,
         'icg_table': folder_icg,
         'ins_cash_flow': folder_ins_cash_flow,
-        'sas_input': folder_sas_input
+        'sas_input': folder_sas_input,
+        'sas_ouput': folder_sas_output,
     },
-    default_configs={'.csv': {
-        'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'on_bad_lines': 'warn', 'dayfirst': True
-    }},
+    default_configs={
+        '.csv': {
+            'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'on_bad_lines': 'warn', 'dayfirst': True
+        },
+        '.sas7bdat': {
+            'encoding': 'latin-1'
+        }
+    },
     column_types={
         'BRAND': str,
         'Tx_MARCA': str,
