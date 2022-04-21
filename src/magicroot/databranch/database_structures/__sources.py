@@ -18,6 +18,10 @@ class DatabaseSources:
         '.ftr': {
             'path': 'path',
             'function': pd.read_feather
+        },
+        '.sas7bdat': {
+            'path': 'filepath_or_buffer',
+            'function': pd.read_sas
         }
     }
 
