@@ -3,7 +3,7 @@
 from logs import *
 from config import *
 
-
+from src.magicroot.smartowl import PartiallyOrderedSet
 
 
 log = log.getLogger('Main')
@@ -11,11 +11,8 @@ log = log.getLogger('Main')
 df = db['FM_SINISTROS', {'on_bad_lines': 'skip'}]
 # df = db.tables.get_dataframe('FM_SINISTROS', overwrite_configs={'on_bad_lines': 'skip'})
 
-
-
-
 log.debug('01. Preprocesses the input data and transforms it into readable csv')
-df = mr.EventsDataFrame()
+# df = mr.EventsDataFrame()
 
 accounts = {
     # level 1
@@ -32,9 +29,8 @@ accounts = {
     ('Option', 'Asset'),
     ('Margin', 'Liability'),
     ('Stock_Gains_Realized', 'Profit')
-
 }
 
-po = mr.PartiallyOrderedSet(accounts)
+po = PartiallyOrderedSet(accounts)
 print(po)
 

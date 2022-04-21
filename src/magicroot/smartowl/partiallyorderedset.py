@@ -14,7 +14,7 @@ class PartiallyOrderedSet(Sorter):
         self._new_next_order()
 
     def __str__(self):
-        return self._order.__str__()
+        return self._sorted_data.__str__()
 
     def _new_next_order(self):
         for pair in self._computable_order():

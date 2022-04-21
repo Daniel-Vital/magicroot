@@ -76,6 +76,7 @@ class Sorter:
         self._unsorted_data.remove(elem)
         self._sorted_data[bucket].append(elem)
         log.debug(f'Sorted {elem} into bucket: {bucket}')
+        log.debug(f'_sorted_data {self._sorted_data}')
 
     def _create_bucket_if_missing(self, bucket):
         if bucket not in self._sorted_data.keys():
