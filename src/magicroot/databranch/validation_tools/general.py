@@ -1,4 +1,5 @@
-import pd
+import pandas as pd
+
 
 def check_indexes(df, index):
     """
