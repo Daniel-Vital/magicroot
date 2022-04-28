@@ -35,4 +35,4 @@ def compared_grouped(df_base, df_new, by, target_columns, diff_columns_suffixe='
             diff_columns_suffixe + target_column: diff(target_column)
             for target_column in target_columns
         }
-    ).sort_values(by=[diff_columns_suffixe + target_column for target_column in target_columns], ascending=False)
+    ).fillna(0).sort_values(by=[diff_columns_suffixe + target_column for target_column in target_columns], ascending=False)
