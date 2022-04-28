@@ -30,9 +30,11 @@ def compared_grouped(df_base, df_new, by, target_columns, diff_columns_suffixe='
     def diff(column):
         return lambda df: df[column + '_new'] - df[column]
 
-    return df_base.merge(df_new, how='outer', validate='one_to_one', suffixes=('', '_new'), on=by).assign(
+    return df_base.merge(df_new, how='outer', validate='one_to_one', suffixes=('', '_new'), on=by).fillna(0).assign(
         **{
             diff_columns_suffixe + target_column: diff(target_column)
             for target_column in target_columns
         }
-    ).fillna(0).sort_values(by=[diff_columns_suffixe + target_column for target_column in target_columns], ascending=False)
+    ).sort_values(
+        by=[diff_columns_suffixe + target_column for target_column in target_columns], ascending=False
+    )
