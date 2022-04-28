@@ -1,4 +1,4 @@
-
+import pd
 
 def check_indexes(df, index):
     """
@@ -38,3 +38,14 @@ def compared_grouped(df_base, df_new, by, target_columns, diff_columns_suffixe='
     ).sort_values(
         by=[diff_columns_suffixe + target_column for target_column in target_columns], ascending=False
     )
+
+
+def compare_types(*args):
+    """
+    Compares types of in a list fields
+    :param args: list of Dataframes
+    :return: Dataframe with comparison of types
+    """
+    return pd.DataFrame({
+        'df_' + str(i + 1): df.dtypes for i, df in enumerate(args)
+    })
