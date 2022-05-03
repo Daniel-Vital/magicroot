@@ -23,6 +23,7 @@ db = mr.databranch.Database(
         'ins_cash_flow': folder_ins_cash_flow,
         'sas_input': folder_sas_input,
         'sas_ouput': folder_sas_output,
+        # 'sas_grouping_output': folder_sas_grouping_output,
     },
     default_configs={
         '.csv': {
