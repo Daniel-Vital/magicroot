@@ -1,2 +1,5 @@
-from .general import *
-from .dataframe_shape import *
+
+import compare
+import dataframe_shape
+
+from .other import *
