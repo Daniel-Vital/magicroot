@@ -26,7 +26,7 @@ def maturity(df, ref_dt_column, cashflow_dt_column, maturity_column='maturity'):
     """
     return transform_columns_to_eu_dates(df, [ref_dt_column, cashflow_dt_column]).assign(
         **{
-            maturity_column: lambda x: np.maximum((x[cashflow_dt_column] - df[ref_dt_column]).dt.days / 365, 0)
+            maturity_column: lambda x: np.maximum((x[cashflow_dt_column] - x[ref_dt_column]).dt.days / 365, 0)
         }
     )
 
