@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import compute
+from . import compute
 
 
 def by_cashflow_date(
