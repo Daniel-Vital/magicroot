@@ -44,6 +44,6 @@ def transform_columns_to_eu_dates(df, columns):
             column: lambda x: pd.to_datetime(
                 x[column],
                 errors='coerce'
-            ).dt.strftime('%d-%m-%Y') for column in columns
+            ) for column in columns
         }
     )
