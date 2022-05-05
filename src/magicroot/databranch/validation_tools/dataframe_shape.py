@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 
 
 def uniformize_columns(*args):
@@ -29,3 +30,25 @@ def get_numeric_columns(df, invert=False, remove=None):
         columns = df.select_dtypes(include=np.number).columns.to_list()
     columns.remove(remove)
     return columns
+
+
+def transform_columns_to_eu_dates(df, columns):
+    """
+    Tranforms the given columns into european dates in the given table
+    :param df: Table to be transformed
+    :param columns: columns to be transformed
+    :return:
+    """
+    def to_date(base_date):
+        def compute(df):
+            return pd.to_datetime(
+                df[base_date],
+                errors='coerce',
+                dayfirst=True
+            )
+        return compute
+    return df.assign(
+        **{
+            column: to_date(column) for column in columns
+        }
+    )
