@@ -39,16 +39,11 @@ def transform_columns_to_eu_dates(df, columns):
     :param columns: columns to be transformed
     :return:
     """
-    def to_date(base_date):
-        def compute(df):
-            return pd.to_datetime(
-                df[base_date],
-                errors='coerce',
-                dayfirst=True
-            )
-        return compute
     return df.assign(
         **{
-            column: to_date(column) for column in columns
+            column: lambda x: pd.to_datetime(
+                x[column],
+                errors='coerce'
+            ).dt.strftime('%d-%m-%Y') for column in columns
         }
     )

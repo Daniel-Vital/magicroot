@@ -15,21 +15,16 @@ print(df)
 
 dm.save()
 """
-print(db)
-print(db['insurance_contract_group_csm'])
 
-db.save_analysis(
-    df=db['insurance_contract_group_csm'],
-    table_name='Analises SAS',
-    analysis_name='insurance_contract_group_csm',
-    cap_rows=100000
+x = mr.databranch.validation_tools.dataframe_shape.transform_columns_to_eu_dates(db['insurance_contract_group_csm'], ['BEGIN_COV_DT', 'END_COV_DT'])
+print(x)
+print(x.dtypes)
+
+x = x.assign(
+    BEGIN_COV_DT=lambda x: pd.to_datetime(
+                x['BEGIN_COV_DT'],
+                errors='coerce',
+                dayfirst=True)
 )
-
-
-path = r'C:\Users\daalcantara\Lusitania\IFRS17 - IFRS17-Implementação - Programa\Outputs\12. Implementação do protótipo de IFRS 17 e monitorização – abordagem partilhada\99 Ficheiros motor de calculo\02 Grouping\02 run\02 Outputs'
-
-mr.pysas.copy_to_csv(path, sep=';')
-
-
-
+print(x)
 
