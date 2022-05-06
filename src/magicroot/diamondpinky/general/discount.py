@@ -43,7 +43,10 @@ def by_cashflow_date(
         ref_dt_column=ref_dt_column, cashflow_dt_column=cashflow_dt_column, maturity_column=maturity_column
     )
 
-    return by_maturity(df_cashflows, df_discount_rates, ref_dt_column, cashflow_dt_column, *args, **kwargs)
+    return by_maturity(
+        df_cashflows=df_cashflows, df_discount_rates=df_discount_rates,
+        maturity_column=maturity_column, *args, **kwargs
+    )
 
 
 def by_maturity(df_cashflows, df_discount_rates, on, *args, **kwargs):
