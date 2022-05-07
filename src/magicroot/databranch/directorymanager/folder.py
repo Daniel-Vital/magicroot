@@ -4,6 +4,11 @@ import re
 import getpass
 import datetime as dt
 import pandas as pd
+from fuzzywuzzy import process
+import subprocess
+import logging
+
+log = logging.getLogger('MagicRoot.Folder')
 
 
 class NoPermissionError(Exception):
@@ -44,6 +49,10 @@ class Folder:
     def path(self):
         return self.os + self.user + self.folder
 
+    @property
+    def contents(self):
+        return os.listdir(self.path)
+
     def save(self, df, file_name):
         if self.readonly:
             raise NoPermissionError(f'Readonly Folder {self.folder}')
@@ -63,6 +72,36 @@ class Folder:
     def to_dataframe(self):
         return pd.DataFrame(self.to_dict())
 
+    def __getitem__(self, key):
+        all_inputs = key.split('\\')
+        current_input = all_inputs[0]
+        match = process.extract(current_input, self.contents)
+        log.debug(match.__str__())
+        folder = Folder(os.path.join(self.path, match[0][0]))
+        if len(all_inputs) > 1:
+            return folder[os.path.join(*all_inputs[1:])]
+        return folder
+
+    def open(self):
+        print(self.path)
+        subprocess.Popen(r'explorer /select,' + self.path)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __str__(self):
+        sep_1 = '│\t'
+        sep_2 = '├──'
+        str = ''
+        str = str + self.folder
+
+        for file in self.contents:
+            str = f'{str}\n\t{sep_2} {file}'
+
+        return str
+
+
+home = Folder(os.path.expanduser('~'))
 
 parser = {
     '.csv': {
