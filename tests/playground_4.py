@@ -6,7 +6,7 @@ import inspect
 log = logging.getLogger('Playground.4')
 
 # from src.magicroot.databranch.directorymanager.folder import *
-from src.magicroot.databranch.directorymanager.navigator import *
+from src.magicroot.databranch.directorymanager.folder import *
 
 
 if __name__ == '__main__':

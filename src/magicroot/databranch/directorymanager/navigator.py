@@ -116,12 +116,12 @@ class Navigator(Path):
         return folder
 
     def open(self):
-        print(self.path)
-        subprocess.Popen(r'explorer /select,' + self.path)
+        path = os.path.join(self.path, self.contents[0])
+        subprocess.Popen(r'explorer /select,' + path)
 
     @classmethod
     def home(cls):
         return Navigator(os.path.expanduser('~'))
 
 
-home = Navigator(os.path.expanduser('~'))
+
