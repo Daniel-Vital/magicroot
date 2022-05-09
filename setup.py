@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="magicroot",
-    version="0.1.37",
+    version="0.1.38",
     author="Daniel-Vital",
     author_email="author@example.com",
     description="Python like magic",
