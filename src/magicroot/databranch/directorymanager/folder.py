@@ -9,6 +9,7 @@ from fuzzywuzzy import process
 import subprocess
 import datetime
 from .navigator import Navigator
+from .parcer import File
 import logging
 
 log = logging.getLogger('MagicRoot.databranch.directorymanager.folder')
@@ -63,7 +64,8 @@ class Folder(Navigator):
         return Folder(super().search(*args, **kwargs).path)
 
     def get(self, file):
-        pass
+        file_path = os.path.join(self.path, file)
+        return File(file_path)
 
 
 home = Folder(os.path.expanduser('~'))

@@ -23,8 +23,8 @@ class Parser:
 
 
 class Csv(Parser):
-    def read(self, path, *args, **kwargs):
-        return pd.read_csv(filepath_or_buffer=path, *args, **kwargs)
+    def read(self, *args, **kwargs):
+        return pd.read_csv(filepath_or_buffer=self.path, *args, **kwargs)
 
     def save(self, obj, *args, **kwargs):
         obj.to_csv(path_or_buf=self.path, *args, **kwargs)
@@ -34,8 +34,8 @@ class Csv(Parser):
 
 
 class SAS(Parser):
-    def read(self, path, *args, **kwargs):
-        return pd.read_sas(filepath_or_buffer=path, *args, **kwargs)
+    def read(self, *args, **kwargs):
+        return pd.read_sas(filepath_or_buffer=self.path, *args, **kwargs)
 
     def save(self, obj, *args, **kwargs):
         raise NotImplementedError('It is not possible to save sas files')
@@ -58,6 +58,13 @@ class File:
 
     def __repr__(self):
         return self.__str__()
+
+    def read(self):
+        extension = extensions.get(self.path)
+        if extension == '.csv':
+            return Csv(self.path).read(sep=';')
+        if extension == '.sas7bdat':
+            return SAS(self.path).read()
 
     def peak(self):
         extension = extensions.get(self.path)
