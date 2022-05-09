@@ -22,7 +22,6 @@ class Folder(Navigator):
 
     def log(self, msg=None):
         if Folder.logger is None:
-            print('did not find logger')
             self._new('.dbLogs')
             logger = logging.getLogger('MagicRoot.databranch.directorymanager.folder.folder_manipulation')
             date_str = str(datetime.datetime.now()).replace('.', '').replace(':', '-')
@@ -30,8 +29,6 @@ class Folder(Navigator):
             hand = logging.FileHandler(log_file)
             hand.setLevel(logging.DEBUG)
             formatter = logging.Formatter('%(asctime)s\t%(name)s\t%(levelname)s\t%(message)s')
-
-            # add formatter to ch
             hand.setFormatter(formatter)
 
             class NoParsingFilter(logging.Filter):
@@ -39,19 +36,9 @@ class Folder(Navigator):
                     return record.name == 'MagicRoot.databranch.directorymanager.folder.folder_manipulation'
 
             hand.addFilter(NoParsingFilter())
-
             logger.setLevel(logging.DEBUG)
             logger.addHandler(hand)
             Folder.logger = logger
-        """
-        logging.basicConfig(
-            level=logging.DEBUG,
-            filename=log_file,
-            filemode='w',
-            format='%(asctime)s\t%(name)s\t%(levelname)s\t%(message)s'
-        )
-        
-        """
 
         Folder.logger.debug(msg)
 
@@ -67,9 +54,6 @@ class Folder(Navigator):
 
     def remove(self, name):
         self.log(f'Removing folder \'{name}\'')
-        # files: os.remove('file_path')
-        # empty folder: os.rmdir('empty_dir_path')
-        # remove all: shutil.rmtree('dir_path')
         folder = os.path.join(self.path, name)
         if os.path.exists(folder):
             shutil.rmtree(folder)
@@ -77,6 +61,9 @@ class Folder(Navigator):
 
     def search(self, *args, **kwargs):
         return Folder(super().search(*args, **kwargs).path)
+
+    def get(self, file):
+        pass
 
 
 home = Folder(os.path.expanduser('~'))

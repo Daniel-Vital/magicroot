@@ -5,6 +5,7 @@ import getpass
 import datetime as dt
 import pandas as pd
 from fuzzywuzzy import process
+from .parcer import File
 import subprocess
 import logging
 
@@ -56,17 +57,15 @@ class Path(SubPath):
         sep_1 = '|\t'
         sep_2 = '|-'
         str = ''
-        log.debug(f'OK')
         other_path = self.without_user if len(self.without_user) > 0 else self.path
-        log.debug(f'OK')
         str = str + other_path
-        log.debug(f'OK')
-        for file in self.contents:
-            log.debug(f'OK {file}')
-            str = f'{str}\n\t{sep_2} {file}'
+        if self.isdir():
+            for file in self.contents:
+                str = f'{str}\n\t{sep_2} {file}'
+        else:
+            str = f'{str}\n\t{File(self.path).peak()}'
 
         log.debug(f'Successfully graphical representation of Path')
-        log.debug(f'\n {str}')
         return str
 
     @property
@@ -82,6 +81,12 @@ class Path(SubPath):
         log.debug(f'Splitting {self.path} on user: {self.user}')
         return re.split(self.user, self.path)
 
+    def isdir(self):
+        return os.path.isdir(self.path)
+
+    def isfile(self):
+        return os.path.isfile(self.path)
+
     @classmethod
     def home(cls):
         return Path(os.path.expanduser('~'))
@@ -91,7 +96,6 @@ class Navigator(Path):
     """
     This class will save the definitions/permissions of each folder
     """
-
     def __init__(self, path):
         log.debug(f'Initializing navigator on \'{path}\'')
         if not os.path.exists(path):
