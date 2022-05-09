@@ -60,11 +60,10 @@ class File:
         return self.__str__()
 
     def read(self, *args, **kwargs):
-        extension = extensions.get(self.path)
-        if extension == '.csv':
-            return Csv(self.path).read(*args, **kwargs)
-        if extension == '.sas7bdat':
-            return SAS(self.path).read(*args, **kwargs)
+        return self._select_parser().read(*args, **kwargs)
+
+    def save(self, obj, *args, **kwargs):
+        raise self._select_parser().read(obj, *args, **kwargs)
 
     def peak(self):
         extension = extensions.get(self.path)
@@ -72,4 +71,11 @@ class File:
             return Csv(self.path).peak(sep=';')
         if extension == '.sas7bdat':
             return SAS(self.path).peak()
+
+    def _select_parser(self):
+        extension = extensions.get(self.path)
+        if extension == '.csv':
+            return Csv(self.path)
+        if extension == '.sas7bdat':
+            return SAS(self.path)
 
