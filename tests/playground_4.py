@@ -10,8 +10,7 @@ from src.magicroot.databranch.directorymanager.folder import *
 
 
 if __name__ == '__main__':
-    print(home['Deloitte\\Lusitania'])
-    print(Navigator('Deloitte\\Lusitania'))
+    print(home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\grouping\\sas\\icg_csm'])
 
 
 # print(os.path.expanduser('~'))
