@@ -18,7 +18,7 @@ class JSON(Parser):
 
     def save(self, obj, *args, **kwargs):
         log.debug(f'Saving .json \'{self.path}\'')
-        with open(self.path, 'w') as outfile:
+        with open(self.path, 'w+') as outfile:
             json.dump(obj, outfile)
 
     def peak(self, *args, **kwargs):
