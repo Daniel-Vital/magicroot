@@ -51,10 +51,10 @@ class Folder(Navigator):
         else:
             self.new_file(name, obj)
 
-    def new_file(self, name, obj):
+    def new_file(self, name, obj, *args, **kwargs):
         self.log(f'Creating new file \'{name}\'')
         new_file = os.path.join(self.path, name)
-        File(new_file).save(obj)
+        File(new_file).save(obj, *args, **kwargs)
         self.log(f'Successfully created new file \'{name}\'')
 
     def new_directory(self, name):

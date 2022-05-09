@@ -37,10 +37,7 @@ class File:
         if extension == '.json':
             log.debug(f'Selected \'.json\'')
             return JSON(self.path)
-        if extension == '.csv':
-            log.debug(f'Selected \'.csv\'')
-            return CSV(self.path)
-        if extension == '.sas7bdat':
-            log.debug(f'Selected \'.sas7bdat\'')
-            return SAS(self.path)
-
+        for Parcer in DEFINED_PARCERS:
+            if extension == '.' + Parcer.extension:
+                log.debug(f'Selected \'{Parcer.extension}\'')
+                return Parcer(self.path)

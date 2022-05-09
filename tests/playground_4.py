@@ -18,9 +18,17 @@ if __name__ == '__main__':
         '.csv': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'},
         '.sas7bdat': {'encoding': 'latin-1'}
     }
-    mr.databranch.directorymanager.CSV.set_default_settings(settings)
-    print(home['documents\\lus\\Scripts'].get('PORTFOLIO_DICTIONARY'))
+    # mr.databranch.directorymanager.CSV.set_default_settings(settings)
+    folder = home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\groping\\pre-performing']
 
+    excel = folder.get(
+        file='grouping validation',
+        sheet_name='02 | Benchmark Justification',
+        usecols='B:AF',
+        skiprows=10
+    )
+    print(excel.head())
+    # folder.new_file('LUS - IFRS17 - Grouping_Validation_v2.00.xlsx', excel, sheet_name='03 | Code', startcol='AF', startrow=10)
 
 
 # print(os.path.expanduser('~'))

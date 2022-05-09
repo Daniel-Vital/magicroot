@@ -1,6 +1,4 @@
-
-import os.path
-
+from openpyxl import load_workbook
 import pandas as pd
 from .parcer_base import Parser, JSON
 import logging
@@ -33,3 +31,33 @@ class SAS(Parser):
     def peak(self, *args, **kwargs):
         return self.read(encoding='latin-1', *args, **kwargs).__repr__()
 
+
+class Excel(Parser):
+    extension = 'xlsx'
+
+    def read(self, *args, **kwargs):
+        return pd.read_excel(io=self.path, *args, **self.read_settings(**kwargs))
+
+    def save(self, obj, *args, **kwargs):
+        """
+        book = load_workbook(self.path)
+        writer = pd.ExcelWriter(self.path, engine='openpyxl')
+        writer.book = book
+
+        ## ExcelWriter for some reason uses writer.sheets to access the sheet.
+        ## If you leave it empty it will not know that sheet Main is already there
+        ## and will create a new sheet.
+
+        writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+
+        obj.to_excel(writer, *args, **kwargs)
+
+        writer.save()
+        """
+        raise NotImplementedError('It is not possible to save excel files')
+
+    def peak(self, *args, **kwargs):
+        return self.read(encoding='latin-1', *args, **kwargs).__repr__()
+
+
+DEFINED_PARCERS = [CSV, SAS, Excel]
