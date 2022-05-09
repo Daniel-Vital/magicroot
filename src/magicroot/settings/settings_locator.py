@@ -1,9 +1,5 @@
-import os
+import pathlib
 
-sep = os.path.sep
+settings_path = pathlib.Path(__file__).parent.resolve()
 
-full_path = os.path.realpath(__name__).replace('.', sep)
 
-components = full_path.split(sep)[:-1]
-
-settings_path = sep.join(components)
