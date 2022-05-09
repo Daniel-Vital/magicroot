@@ -64,8 +64,8 @@ class Folder(Navigator):
         return Folder(super().search(*args, **kwargs).path)
 
     def get(self, file):
-        file_path = os.path.join(self.path, file)
-        return File(file_path)
+        file_path = os.path.join(self.search(file).path)
+        return File(file_path).read()
 
 
 home = Folder(os.path.expanduser('~'))

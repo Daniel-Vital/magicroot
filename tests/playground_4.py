@@ -11,6 +11,8 @@ from src.magicroot.databranch.directorymanager.folder import *
 
 if __name__ == '__main__':
     print(home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\grouping\\sas\\icg_csm'])
+    print('----------------------')
+    print(home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\grouping\\sas'].get('icg_csm'))
 
 
 # print(os.path.expanduser('~'))

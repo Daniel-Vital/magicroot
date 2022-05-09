@@ -30,7 +30,7 @@ class Csv(Parser):
         obj.to_csv(path_or_buf=self.path, *args, **kwargs)
 
     def peak(self, *args, **kwargs):
-        return self.read(path=self.path, nrows=5, *args, **kwargs).__repr__()
+        return self.read(nrows=5, *args, **kwargs).__repr__()
 
 
 class SAS(Parser):
@@ -41,7 +41,7 @@ class SAS(Parser):
         raise NotImplementedError('It is not possible to save sas files')
 
     def peak(self, *args, **kwargs):
-        return self.read(path=self.path, encoding='latin-1', *args, **kwargs).__repr__()
+        return self.read(encoding='latin-1', *args, **kwargs).__repr__()
 
 
 class File:
