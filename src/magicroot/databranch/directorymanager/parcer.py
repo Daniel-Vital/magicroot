@@ -59,12 +59,12 @@ class File:
     def __repr__(self):
         return self.__str__()
 
-    def read(self):
+    def read(self, *args, **kwargs):
         extension = extensions.get(self.path)
         if extension == '.csv':
-            return Csv(self.path).read(sep=';')
+            return Csv(self.path).read(*args, **kwargs)
         if extension == '.sas7bdat':
-            return SAS(self.path).read()
+            return SAS(self.path).read(*args, **kwargs)
 
     def peak(self):
         extension = extensions.get(self.path)
