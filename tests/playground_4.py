@@ -22,9 +22,6 @@ if __name__ == '__main__':
     print(home['documents\\lus\\Scripts'].get('PORTFOLIO_DICTIONARY'))
 
 
-    file_path = os.path.realpath(__name__)
-    print(file_path)
-
 
 # print(os.path.expanduser('~'))
 
