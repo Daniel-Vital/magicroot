@@ -7,9 +7,10 @@ import datetime as dt
 import pandas as pd
 from fuzzywuzzy import process
 import subprocess
+from ...fileleaf import extensions
 import datetime
 from .navigator import Navigator
-from .parcer import File
+from .file import File
 import logging
 
 log = logging.getLogger('MagicRoot.databranch.directorymanager.folder')
@@ -43,7 +44,20 @@ class Folder(Navigator):
 
         Folder.logger.debug(msg)
 
-    def new(self, name):
+    def new(self, name, obj=None):
+        extension = extensions.get(name)
+        if extension is None:
+            self.new_directory(name)
+        else:
+            self.new_file(name, obj)
+
+    def new_file(self, name, obj):
+        self.log(f'Creating new file \'{name}\'')
+        new_file = os.path.join(self.path, name)
+        File(new_file).save(obj)
+        self.log(f'Successfully created new file \'{name}\'')
+
+    def new_directory(self, name):
         self.log(f'Creating new folder \'{name}\'')
         self._new(name)
         self.log(f'Successfully created new folder \'{name}\'')

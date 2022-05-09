@@ -7,12 +7,19 @@ log = logging.getLogger('Playground.4')
 
 # from src.magicroot.databranch.directorymanager.folder import *
 from src.magicroot.databranch.directorymanager.folder import *
-
+from src import magicroot as mr
 
 if __name__ == '__main__':
-    print(home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\grouping\\sas\\icg_csm'])
-    print('----------------------')
-    print(home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\grouping\\sas'].get('icg_csm'))
+    d = {'A': 1, 'B': 2}
+    # print(home['documents\\lus\\Scripts'].new_file('settings.json', d))
+    settings = {'read': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'}}
+    default_configs = {
+        '.csv': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'},
+        '.sas7bdat': {'encoding': 'latin-1'}
+    }
+    mr.databranch.directorymanager.CSV.set_default_settings(settings)
+    print(home['documents\\lus\\Scripts'].get('PORTFOLIO_DICTIONARY'))
+
 
 
 # print(os.path.expanduser('~'))

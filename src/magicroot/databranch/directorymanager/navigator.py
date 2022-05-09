@@ -5,7 +5,7 @@ import getpass
 import datetime as dt
 import pandas as pd
 from fuzzywuzzy import process
-from .parcer import File
+from .file import File
 import subprocess
 import logging
 

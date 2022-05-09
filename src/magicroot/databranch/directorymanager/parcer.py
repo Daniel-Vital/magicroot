@@ -1,7 +1,10 @@
+import json
 
-from ...fileleaf import extensions
+
 import pandas as pd
+import logging
 
+log = logging.getLogger('MagicRoot.databranch.directorymanager.parcer')
 pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pd.set_option('display.width', None)
@@ -9,6 +12,8 @@ pd.set_option('display.max_colwidth', None)
 
 
 class Parser:
+    extension = None
+
     def __init__(self, path):
         self.path = path
 
@@ -21,61 +26,22 @@ class Parser:
     def save(self, obj, *args, **kwargs):
         pass
 
+    @classmethod
+    def load_default_settings(cls):
+        return {}
 
-class Csv(Parser):
-    def read(self, *args, **kwargs):
-        return pd.read_csv(filepath_or_buffer=self.path, *args, **kwargs)
-
-    def save(self, obj, *args, **kwargs):
-        obj.to_csv(path_or_buf=self.path, *args, **kwargs)
-
-    def peak(self, *args, **kwargs):
-        return self.read(nrows=5, *args, **kwargs).__repr__()
-
-
-class SAS(Parser):
-    def read(self, *args, **kwargs):
-        return pd.read_sas(filepath_or_buffer=self.path, *args, **kwargs)
-
-    def save(self, obj, *args, **kwargs):
-        raise NotImplementedError('It is not possible to save sas files')
-
-    def peak(self, *args, **kwargs):
-        return self.read(encoding='latin-1', *args, **kwargs).__repr__()
+    @classmethod
+    def read_settings(cls, **kwargs):
+        try:
+            return {**cls.load_default_settings()['read'], **kwargs}
+        except FileNotFoundError:
+            return kwargs
 
 
-class File:
-    map = {
-        '.csv': Csv,
-        '.sas7bdat': SAS
-    }
-
-    def __init__(self, path):
-        self.path = path
-
-    def __str__(self):
-        return 'gotta you'
-
-    def __repr__(self):
-        return self.__str__()
-
-    def read(self, *args, **kwargs):
-        return self._select_parser().read(*args, **kwargs)
-
-    def save(self, obj, *args, **kwargs):
-        raise self._select_parser().read(obj, *args, **kwargs)
-
-    def peak(self):
-        extension = extensions.get(self.path)
-        if extension == '.csv':
-            return Csv(self.path).peak(sep=';')
-        if extension == '.sas7bdat':
-            return SAS(self.path).peak()
-
-    def _select_parser(self):
-        extension = extensions.get(self.path)
-        if extension == '.csv':
-            return Csv(self.path)
-        if extension == '.sas7bdat':
-            return SAS(self.path)
+    @classmethod
+    def save_settings(cls, **kwargs):
+        try:
+            return {**cls.load_default_settings()['save'], **kwargs}
+        except FileNotFoundError:
+            return kwargs
 
