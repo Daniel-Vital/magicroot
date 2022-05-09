@@ -1,4 +1,6 @@
 import json
+import os.path
+
 import pandas as pd
 from .parcer import Parser
 import logging
@@ -38,11 +40,13 @@ class CSV(Parser):
 
     @classmethod
     def set_default_settings(cls, settings):
-        JSON('src\\magicroot\\settings\\csv.json').save(settings)
+        path = os.path.join(cls.settings_path, 'csv.json')
+        JSON(path).save(settings)
 
     @classmethod
     def load_default_settings(cls):
-        return JSON('src\\magicroot\\settings\\csv.json').read()
+        path = os.path.join(cls.settings_path, 'csv.json')
+        return JSON(path).read()
 
 
 class SAS(Parser):
@@ -59,9 +63,11 @@ class SAS(Parser):
 
     @classmethod
     def set_default_settings(cls, settings):
-        JSON('src\\magicroot\\settings\\sas.json').save(settings)
+        path = os.path.join(cls.settings_path, 'sas.json')
+        JSON(path).save(settings)
 
     @classmethod
     def load_default_settings(cls):
-        return JSON('src\\magicroot\\settings\\sas.json').read()
+        path = os.path.join(cls.settings_path, 'sas.json')
+        return JSON(path).read()
 

@@ -2,6 +2,7 @@ from config import *
 from logs import *
 import logging
 import inspect
+import os
 
 log = logging.getLogger('Playground.4')
 
@@ -20,6 +21,9 @@ if __name__ == '__main__':
     mr.databranch.directorymanager.CSV.set_default_settings(settings)
     print(home['documents\\lus\\Scripts'].get('PORTFOLIO_DICTIONARY'))
 
+
+    file_path = os.path.realpath(__name__)
+    print(file_path)
 
 
 # print(os.path.expanduser('~'))

@@ -1,6 +1,6 @@
 import json
 
-
+from ...settings.settings_locator import settings_path
 import pandas as pd
 import logging
 
@@ -13,6 +13,7 @@ pd.set_option('display.max_colwidth', None)
 
 class Parser:
     extension = None
+    settings_path = settings_path
 
     def __init__(self, path):
         self.path = path
