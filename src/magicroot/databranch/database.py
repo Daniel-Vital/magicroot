@@ -43,11 +43,11 @@ class Database:
 
         :param configs_folder: Name of the folder where the Database 'configs' will be stored
         This is the base folder of the Database and by default is named '00 Configs'.
-        It stores general information about the Database, everthing is stored in a human-readable .csv format to allow
+        It stores tools information about the Database, everthing is stored in a human-readable .csv format to allow
         changes to be done even if the Database is not running. Note that these configs are loaded at the start of
         runtime and saved at the end, therfore changing them at runtime will have no effect in the Database.
         Within the configs are stored several files, including
-        'general_configs.csv' this file stores general configs of the Database in csv
+        'general_configs.csv' this file stores tools configs of the Database in csv
         'sources.csv' This stores a list of sources for the Database
 
 

@@ -1,4 +1,4 @@
-from src.magicroot.diamondpinky.general.discount import by_cashflow_date as discount_cashflows
+from src.magicroot.diamondpinky.tools.discount import by_cashflow_date as discount_cashflows
 from config import *
 import logging
 

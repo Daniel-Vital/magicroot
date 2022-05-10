@@ -6,7 +6,7 @@ import re
 import datetime as dt
 from src.magicroot.databranch.directorymanager.old_folder import *
 
-from src.magicroot.diamondpinky.general.allocate import *
+from src.magicroot.diamondpinky.tools.allocate import *
 
 from src import magicroot as mr
 
