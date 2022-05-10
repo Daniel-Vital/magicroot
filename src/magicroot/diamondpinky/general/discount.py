@@ -1,6 +1,44 @@
 import pandas as pd
 import numpy as np
 from . import compute
+import logging
+
+log = logging.getLogger(__name__)
+
+
+def cashflows(
+        df_cashflows,
+        ref_dt_column,
+        cashflow_dt_column,
+        rate_column,
+        cashflow_columns,
+        maturity_column=None,
+        disc_rate_column=None,
+        discounted_prefix=None,
+        component_prefix=None
+):
+    """
+    Merges cashflows and discount rates tables, and calls with_single_table to discount cashflows
+    :param df_cashflows: Dataframe
+        :column on: column(s) should be in the table
+    to be discounted
+
+    :param df_discount_rates: Dataframe
+        :column on: column(s) should be in the table
+    with discount rates
+
+    :param on: str
+    See pandas.DataFrame.merge parameter on
+
+    :return: See with_single_table
+    """
+    df_cashflows = compute.maturity(df_cashflows, ref_dt_column, cashflow_dt_column, maturity_column)
+    df_cashflows = compute.discount_rate(df_cashflows, rate_column, maturity_column, disc_rate_column)
+    df_cashflows = compute.discounted_cashflows(df_cashflows, cashflow_columns, disc_rate_column, discounted_prefix)
+    discounted_columns_pairs = compute.discounted_columns_pairs(cashflow_columns, discounted_prefix)
+    df_cashflows = compute.discounted_components(df_cashflows, discounted_columns_pairs, component_prefix)
+
+    return df_cashflows
 
 
 def by_cashflow_date(
@@ -34,6 +72,7 @@ def by_cashflow_date(
 
     :return: See with_single_table
     """
+    log.debug('Computing maturity')
     df_cashflows = compute.maturity(
         df=df_cashflows,
         ref_dt_column=ref_dt_column, cashflow_dt_column=cashflow_dt_column, maturity_column=maturity_column
@@ -123,7 +162,7 @@ def with_discounted_rates(
         :column prefix + cashflow_columns: cashflow discounted
         :column components + prefix + cashflow_columns: Amount of each cashflow that was discounted
     """
-    df = compute.discount_cashflows(
+    df = compute.discounted_cashflows(
         df=df, cashflow_columns=cashflow_columns, disc_rate_column=disc_rate_column, prefix=prefix
     )
 

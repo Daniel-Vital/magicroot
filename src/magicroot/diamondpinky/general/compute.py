@@ -1,4 +1,4 @@
-from ...databranch.validation_tools.dataframe_shape import transform_columns_to_eu_dates
+from . import format
 import numpy as np
 
 
@@ -24,7 +24,7 @@ def maturity(df, ref_dt_column, cashflow_dt_column, maturity_column='maturity'):
         :column maturity_column: computed column
     result table
     """
-    return transform_columns_to_eu_dates(df, [ref_dt_column, cashflow_dt_column]).assign(
+    return format.as_date(df, [ref_dt_column, cashflow_dt_column]).assign(
         **{
             maturity_column: lambda x: np.maximum((x[cashflow_dt_column] - x[ref_dt_column]).dt.days / 365, 0)
         }
@@ -60,7 +60,7 @@ def discount_rate(df, rate_column, maturity_column, disc_rate_column='disc_rate'
     )
 
 
-def discount_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_'):
+def discounted_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_'):
     """
     Discounts cashflows
     :param df: Dataframe
@@ -88,6 +88,18 @@ def discount_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_'):
             for column in cashflow_columns
         }
     )
+
+
+def discounted_columns_pairs(cashflow_columns, prefix):
+    """
+    Computes a dictionary with the undiscounted version of columns as keys and the discounted version as values
+    :param cashflow_columns: undiscounted cashflow columns
+    :param prefix: prefix used to mark discounted columns
+    :return: a dictionary with the undiscounted version of columns as keys and the discounted version as values
+    """
+    return {
+        undiscounted_column: prefix + undiscounted_column for undiscounted_column in cashflow_columns
+    }
 
 
 def discounted_components(df, cashflow_columns, prefix='comp_'):
