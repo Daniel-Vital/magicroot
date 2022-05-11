@@ -27,7 +27,7 @@ class File:
     def peak(self):
         extension = extensions.get(self.path)
         if extension == '.csv':
-            return CSV(self.path).peak(sep=';')
+            return CSV(self.path).peak()
         if extension == '.sas7bdat':
             return SAS(self.path).peak()
 
