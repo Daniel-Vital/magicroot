@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-from src.magicroot.beta import fileleaf as fl
+from ... import fileleaf as fl
 
 
 class DatabaseSources:

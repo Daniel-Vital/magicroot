@@ -1,6 +1,6 @@
 import os
 import json
-from src.magicroot.beta.settings.settings_locator import settings_path as base_settings_path
+from ..settings.settings_locator import settings_path as base_settings_path
 import pandas as pd
 import logging
 

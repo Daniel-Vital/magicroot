@@ -3,7 +3,7 @@ import os
 import xml.sax
 import xml.dom.minidom
 
-from src.magicroot.beta import fileleaf as fl
+from .. import fileleaf as fl
 
 
 def extract_sas_guide_project(path, output_folder='01 SAS project files', aux_files='02 Other files'):

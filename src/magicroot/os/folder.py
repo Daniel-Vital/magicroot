@@ -1,6 +1,6 @@
 import os
 import shutil
-from src.magicroot.beta.fileleaf import extensions
+from ..beta import fileleaf as fl
 import datetime
 from .navigator import Navigator
 from .file import File
