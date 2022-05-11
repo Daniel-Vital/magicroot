@@ -1,5 +1,6 @@
 import pandas as pd
-from .reshape import uniformize_columns, get_numeric_columns
+from .reshape import uniformize_columns
+from .select import numeric_columns
 
 
 def grouped(df_base, df_new, by, target_columns, diff_columns_suffixe='DIFF_'):
@@ -65,7 +66,7 @@ def dataframes(df_tested, df_benchmark, index, names=('Tested', 'Benchmark')):
         columns={'level_0': 'LINE', 'level_1': 'SOURCE'}
     )
 
-    group = result.groupby(index + ['LINE'], dropna=False)[get_numeric_columns(result, remove='LINE')].fillna(0)
+    group = result.groupby(index + ['LINE'], dropna=False)[numeric_columns(result, remove='LINE')].fillna(0)
 
     def treat_result(df, name):
         return pd.concat([result[['LINE', 'SOURCE']], df], axis=1).query('SOURCE == "other"').assign(SOURCE=name)

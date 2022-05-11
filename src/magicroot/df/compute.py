@@ -1,4 +1,4 @@
-from src.magicroot.tools import format
+from . import format
 import numpy as np
 
 
