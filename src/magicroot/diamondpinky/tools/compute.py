@@ -60,7 +60,7 @@ def discount_rate(df, rate_column, maturity_column, disc_rate_column='disc_rate'
     )
 
 
-def discounted_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_'):
+def discounted_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_', suffix=''):
     """
     Discounts cashflows
     :param df: Dataframe
@@ -77,6 +77,9 @@ def discounted_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_')
     :param prefix: str, default 'disc_'
     column with the prefix to add to the column names with the discounted cashflows
 
+    :param suffix: str, default ''
+    column with the suffix to add to the column names with the discounted cashflows
+
     :return: Dataframe
         :column previous: all column(s) previously in the table
         :column prefix + cashflow_columns: computed columns
@@ -84,25 +87,33 @@ def discounted_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_')
     """
     return df.assign(
         **{
-            column + prefix: lambda x: x[column] * x[disc_rate_column]
+            prefix + column + suffix: lambda x: x[column] * x[disc_rate_column]
             for column in cashflow_columns
         }
     )
 
 
-def discounted_columns_pairs(cashflow_columns, prefix):
+def discounted_columns_pairs(cashflow_columns, prefix, suffix):
     """
     Computes a dictionary with the undiscounted version of columns as keys and the discounted version as values
-    :param cashflow_columns: undiscounted cashflow columns
-    :param prefix: prefix used to mark discounted columns
+
+    :param cashflow_columns: list
+    undiscounted cashflow columns
+
+    :param prefix: str
+    prefix used to mark discounted columns
+
+    :param suffix: str
+     prefix used to mark discounted columns
+
     :return: a dictionary with the undiscounted version of columns as keys and the discounted version as values
     """
     return {
-        undiscounted_column: prefix + undiscounted_column for undiscounted_column in cashflow_columns
+        undiscounted_column: prefix + undiscounted_column + suffix for undiscounted_column in cashflow_columns
     }
 
 
-def discounted_components(df, cashflow_columns, prefix='comp_'):
+def discounted_components(df, cashflow_columns, prefix='comp_', suffix=''):
     """
     Computes discounted amounts from cashflows
     :param df: Dataframe
@@ -115,6 +126,9 @@ def discounted_components(df, cashflow_columns, prefix='comp_'):
     :param prefix: str, default 'comp_'
     column with the prefix to add to the column names with the discounted amounts from cashflows
 
+    :param suffix: str, default ''
+    column with the suffix to add to the column names with the discounted cashflows
+
     :return: Dataframe
         :column previous: all column(s) previously in the table
         :column prefix + cashflow_columns: computed columns
@@ -122,7 +136,7 @@ def discounted_components(df, cashflow_columns, prefix='comp_'):
     """
     return df.assign(
         **{
-            disc_cashflow_column + prefix: lambda x: x[disc_cashflow_column] - x[cashflow_column]
+            prefix + disc_cashflow_column + suffix: lambda x: x[disc_cashflow_column] - x[cashflow_column]
             for cashflow_column, disc_cashflow_column in cashflow_columns.items()
         }
     )
