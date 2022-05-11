@@ -1,5 +1,5 @@
 from .parcers import *
-from src.magicroot.beta.fileleaf import extensions
+from ..beta.fileleaf import extensions
 import logging
 
 log = logging.getLogger('MagicRoot.databranch.os.file')

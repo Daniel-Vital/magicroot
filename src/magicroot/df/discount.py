@@ -1,4 +1,4 @@
-from src.magicroot.df import compute
+from . import compute
 import logging
 
 log = logging.getLogger(__name__)
