@@ -1,14 +1,9 @@
-from config import *
-from logs import *
 import logging
-import inspect
-import os
 
 log = logging.getLogger('Playground.4')
 
-# from src.magicroot.databranch.directorymanager.folder import *
-from src.magicroot.databranch.directorymanager.folder import *
-from src import magicroot as mr
+# from src.magicroot.databranch.os.folder import *
+from src.magicroot.os.folder import *
 
 if __name__ == '__main__':
     d = {'A': 1, 'B': 2}
@@ -18,7 +13,7 @@ if __name__ == '__main__':
         '.csv': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'},
         '.sas7bdat': {'encoding': 'latin-1'}
     }
-    # mr.databranch.directorymanager.CSV.set_default_settings(settings)
+    # mr.databranch.os.CSV.set_default_settings(settings)
     folder = home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\groping\\pre-performing']
 
     excel = folder.get(

@@ -1,15 +1,12 @@
 
 # modules
-from . import databranch
-from . import diamondpinky
-from . import fileleaf
-from . import pysas
-from . import gardeningtools
-from . import smartowl
+from . import beta
+from . import df
+from . import os
+from . import time
 
 # global variables
-from .databranch import home
 
 import logging
-logging.getLogger('magicroot').addHandler(logging.NullHandler())
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
