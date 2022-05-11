@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from . import create
 
 
 def uniformize_columns(*args):
@@ -15,4 +17,16 @@ def uniformize_columns(*args):
     return args
 
 
+def uniformize_shape(*args):
+    """
+    Created empty rows and columns in the Dataframes, such that all Dataframes provided have the same shape
+    :param args:
+    :return:
+    """
+    args = uniformize_columns(*args)
+    shape = np.maximum(*[df.shape for df in args])
+
+    canvas = create.empty(shape, columns=args[0].columns)
+
+    return (canvas.fillna(df) for df in args)
 
