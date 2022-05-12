@@ -1,6 +1,6 @@
 import pandas as pd
-from .reshape import uniformize
-from .select import numeric_columns
+from . import reshape
+from . import select
 
 
 def grouped(df_tested, df_benchmark, by, *args, **kwargs):
@@ -41,25 +41,27 @@ def dataframes(df_tested, df_benchmark, index, names=('Tested', 'Benchmark')):
     :param names:
     :return:
     """
-    df_tested, df_benchmark = uniformize(index, df_tested, df_benchmark)
+    df_tested, df_benchmark = reshape.uniformize(index, df_tested, df_benchmark)
 
     result = df_tested.compare(df_benchmark, align_axis=0, keep_shape=True, keep_equal=True)
 
     result = result.reset_index().rename(
         columns={'level_0': 'LINE', 'level_1': 'SOURCE'}
     )
-    print(result)
 
-    group = result.groupby(index + ['LINE'], dropna=False)[numeric_columns(result, remove='LINE')].fillna(0)
+    def new_lines(df, by, func, name, keep):
+        group = df.groupby(by, dropna=False)[select.numeric_columns(df, remove='LINE')].fillna(0)
 
-    def treat_result(df, name):
-        return pd.concat([result[['LINE', 'SOURCE']], df], axis=1).query('SOURCE == "other"').assign(SOURCE=name)
+        return pd.concat([df[keep], func(group)], axis=1).query('SOURCE == "other"').assign(SOURCE=name)
 
-    a = treat_result(group.diff().abs(), 'Abs diff')
-    b = treat_result(group.pct_change(), 'Rel diff')
+    keep = ['LINE', 'SOURCE', 'REPORTING_DT', 'ENTITY_ID', 'INSURANCE_CONTRACT_GROUP_ID', 'CURRENCY_CD', 'APPROACH_CD',
+            'BEGIN_COV_DT', 'END_COV_DT', 'CURRENT_CURVE_ID']
+    a = new_lines(result, index + ['LINE'], lambda df: df.diff().abs(), 'Abs diff', keep)
+    b = new_lines(result, index + ['LINE'], lambda df: df.pct_change(), 'Rel diff', keep)
 
     result = pd.concat([result, a, b])
 
+    # sorter
     sorter = {'self': '01', 'other': '02', 'Abs diff': '03', 'pct diff': '04'}
     sorter = {key: value + ' ' + key for key, value in sorter.items()}
 
@@ -77,3 +79,5 @@ def dataframes(df_tested, df_benchmark, index, names=('Tested', 'Benchmark')):
 
     result = result.round(2)
     return result
+
+

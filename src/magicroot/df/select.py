@@ -13,5 +13,6 @@ def numeric_columns(df, invert=False, remove=None):
         columns = df.select_dtypes(exclude=np.number).columns.to_list()
     else:
         columns = df.select_dtypes(include=np.number).columns.to_list()
-    columns.remove(remove)
+    if remove:
+        columns.remove(remove)
     return columns
