@@ -17,6 +17,27 @@ def uniformize_columns(*args):
     return args
 
 
+def uniformize_index(index, *args):
+    """
+    Created empty rows in the Dataframes, such that all Dataframes provided have the same shape
+    :param index:
+    :param args:
+    :return:
+    """
+    index_values = pd.concat([df[index] for df in args]).drop_duplicates().reset_index(drop=True)
+    return (index_values.merge(df, how='left') for df in args)
+
+
+def uniformize(index, *args):
+    """
+    Created empty rows and columns in the Dataframes, such that all Dataframes provided have the same shape
+    :param index:
+    :param args:
+    :return:
+    """
+    return uniformize_index(index, *uniformize_columns(*args))
+
+
 def uniformize_shape(*args):
     """
     Created empty rows and columns in the Dataframes, such that all Dataframes provided have the same shape

@@ -1,5 +1,5 @@
 import pandas as pd
-from .reshape import uniformize_columns
+from .reshape import uniformize
 from .select import numeric_columns
 
 
@@ -41,18 +41,14 @@ def dataframes(df_tested, df_benchmark, index, names=('Tested', 'Benchmark')):
     :param names:
     :return:
     """
-    df_tested, df_benchmark = uniformize_columns(df_tested, df_benchmark)
-    index_values = df_tested[index].merge(df_benchmark[index], how='outer').drop_duplicates().reset_index(drop=True)
-    df_tested = index_values.merge(df_tested, how='left')
-    df_benchmark = index_values.merge(df_benchmark, how='left')
+    df_tested, df_benchmark = uniformize(index, df_tested, df_benchmark)
 
-    result = df_tested.compare(
-        df_benchmark, align_axis=0, keep_shape=True, keep_equal=True
-    )
+    result = df_tested.compare(df_benchmark, align_axis=0, keep_shape=True, keep_equal=True)
 
     result = result.reset_index().rename(
         columns={'level_0': 'LINE', 'level_1': 'SOURCE'}
     )
+    print(result)
 
     group = result.groupby(index + ['LINE'], dropna=False)[numeric_columns(result, remove='LINE')].fillna(0)
 
