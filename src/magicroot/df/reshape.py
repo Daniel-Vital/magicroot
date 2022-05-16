@@ -14,7 +14,7 @@ def uniformize_columns(*args):
         for df in args:
             if column not in df:
                 df[column] = np.nan
-    return args
+    return (arg for arg in args)
 
 
 def uniformize_index(index, *args):
@@ -25,7 +25,7 @@ def uniformize_index(index, *args):
     :return:
     """
     index_values = pd.concat([df[index] for df in args]).drop_duplicates().reset_index(drop=True)
-    return (index_values.merge(df, how='left') for df in args)
+    return (index_values.merge(df, how='left')[df.columns] for df in args)
 
 
 def uniformize(index, *args):

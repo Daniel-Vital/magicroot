@@ -2,6 +2,69 @@ from . import format
 import numpy as np
 
 
+def duration(df, dt_begin, dt_end, computed_column='duration', days=False,  *args, **kwargs):
+    """
+    Computes duration in days between two dates
+    :param df: Dataframe
+        :column dt_begin: column(s) should be in the table
+        :column dt_end: column(s) should be in the table
+    base to compute
+
+    :param dt_begin: str
+    column with the begin date
+
+    :param dt_end: str
+    column with the end date
+
+    :param computed_column: str, default 'maturity'
+    column with the name to give to the column with the computed duration
+
+    :return: Dataframe
+        :column previous: all column(s) previously in the table
+        :column duration_column: computed column
+    result table
+    """
+    multiplier = 1 if days else 365
+    return format.as_date(df, [dt_begin, dt_end],  *args, **kwargs).assign(
+        **{
+            computed_column: lambda x: np.maximum((x[dt_end] - x[dt_begin]).dt.days / multiplier, 0)
+        }
+    )
+
+
+def date_perc(df, dt_begin, dt_end, dt_ref, duration_column='duration_pct'):
+    """
+    Computes percentage of a date between to other dates
+    :param df: Dataframe
+        :column dt_begin: column(s) should be in the table
+        :column dt_end: column(s) should be in the table
+    base to compute
+
+    :param dt_begin: str
+    column with the begin date
+
+    :param dt_end: str
+    column with the end date
+
+    :param dt_ref: str
+    column with the end date
+
+    :param duration_column: str, default 'maturity'
+    column with the name to give to the column with the computed duration
+
+    :return: Dataframe
+        :column previous: all column(s) previously in the table
+        :column duration_column: computed column
+    result table
+    """
+    return format.as_date(df, [dt_begin, dt_end, dt_ref]).assign(
+        **{
+            duration_column: lambda x:
+            duration(x, dt_begin, dt_ref)['duration'] / duration(x, dt_begin, dt_end)['duration']
+        }
+    )
+
+
 def maturity(df, ref_dt_column, cashflow_dt_column, maturity_column='maturity'):
     """
     Computes maturity

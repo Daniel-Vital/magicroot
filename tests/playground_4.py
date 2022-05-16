@@ -4,26 +4,33 @@ log = logging.getLogger('Playground.4')
 
 # from src.magicroot.databranch.os.folder import *
 from src.magicroot.os.folder import *
+import src.magicroot as mr
+
 
 if __name__ == '__main__':
-    d = {'A': 1, 'B': 2}
-    # print(home['documents\\lus\\Scripts'].new_file('settings.json', d))
-    settings = {'read': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'}}
-    default_configs = {
-        '.csv': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'},
-        '.sas7bdat': {'encoding': 'latin-1'}
-    }
-    # mr.databranch.os.CSV.set_default_settings(settings)
-    folder = home['Lus\\IFRS 17\\Motor de calculo\\data model tables\\output\\groping\\pre-performing']
 
-    excel = folder.get(
-        file='grouping validation',
-        sheet_name='02 | Benchmark Justification',
-        usecols='B:AF',
-        skiprows=10
-    )
-    print(excel.head())
-    # folder.new_file('LUS - IFRS17 - Grouping_Validation_v2.00.xlsx', excel, sheet_name='03 | Code', startcol='AF', startrow=10)
+
+    df_insurance_cashflow = dm_ifrs17.get('insurance_cashflow')
+    df = group_out_folder.get('insurance_contract_disc.csv', index_col=0)
+
+    query = 'ALLOC_INSURANCE_CONTRACT_GROUP_ID == "D02100C2020" & CASHFLOW_TYPE_CD == "EXR"'
+    # print(df_insurance_cashflow.sample(100))
+
+    df = df.query(query).sample(10)
+
+    # print(df)
+
+    # df = mr.df.format.as_date(df, ['CASHFLOW_DT'])
+    # df = mr.df.format.as_date(df, ['CASHFLOW_DT', 'REPORTING_DT'])
+    # df = mr.df.format.as_date(df, ['REPORTING_DT', 'CASHFLOW_DT'])
+    # df = mr.df.compute.duration(df, 'BEGIN_COV_DT', 'END_COV_DT', computed_column='Cohort_dur', errors='coerce')
+    # df = mr.df.compute.duration(df, 'BEGIN_COV_DT', 'REPORTING_DT', computed_column='COhort_passed', errors='coerce')
+    # df['x'] = df['Cohort_dur'] / df['COhort_passed']
+    # print(mr.df.compute.duration(df, 'BEGIN_COV_DT', 'REPORTING_DT', computed_column='COhort_passed', errors='coerce'))
+    # df['x'] = mr.df.compute.duration(df, 'BEGIN_COV_DT', 'REPORTING_DT', computed_column='COhort_passed', errors='coerce') / mr.df.compute.duration(df, 'BEGIN_COV_DT', 'END_COV_DT', computed_column='Cohort_dur', errors='coerce')
+    df = mr.df.compute.date_perc(df, 'BEGIN_COV_DT', 'END_COV_DT', 'REPORTING_DT')
+
+    print(df)
 
 
 # print(os.path.expanduser('~'))

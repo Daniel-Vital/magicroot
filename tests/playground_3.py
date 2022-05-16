@@ -1,104 +1,62 @@
-from config import *
+import src.magicroot as mr
 import logging
 
 
 log = logging.getLogger('Datamodel.Montantes_por_Cobertura')
 
 
-def trata_tabelas():
-    log.debug('Initializing Step 1 - Formatting and checking inputs')
-    log.debug('Removing prefix \'HRECRES\' from the columns of the reinsurance table')
-    tabela_resseguro.columns = [column.replace('HRECRES', '') for column in tabela_resseguro.columns]
-    log.debug('Reformatting premiums from \'.3\' to 0.3 in reinsurance table')
-    tabela_resseguro = tabela_resseguro.assign(
-        PREMIO=lambda x: x['PREMIO'].map(lambda p: float('0' + p if p[0] == '.' else p))
-    )
-    log.debug('Defining dictionary with all columns expected by the process, and their respective types')
-    colunas_utilizadas = {
-        'BRAND': 'string',
-        'RAMO': 'string',
-        'CODIGO': 'string',
-        'TRATADO': 'string',
-        'APOLICE': 'string',
-        'DATAPROC': 'string',
-        'CODMOV': 'string',
-        'CODSIT': 'string',
-        'MODALIDADE': 'string',
-        'SUBMODALIDADE': 'string',
+if __name__ == '__main__':
+    mr.os.parcers.CSV.set_default_settings({
+        'read': {'delimiter': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'},
+        'save': {'sep': ';', 'decimal': ',', 'encoding': 'latin-1', 'quotechar': '"'},
+    })
+    extract_folder = mr.os.home['Lus\\IFRS 17\\output\\dados\\fontes\\extracoes']
+    outputs_pre_cob = mr.os.home['Lus\\IFRS 17\\outputs\\dados\\premios por cobertura\\ouputs']
+    df_premiums = extract_folder.get('FM_HRECICOBERTURASANO', nrows=10)
+    df_reinsurance = extract_folder.get('FM_HRECRESSEGUROANO', nrows=100000)
+    df_commissions = extract_folder.get('FM_HRECICOBERTURASANO_COMISSAO', nrows=10)
+    df_config = outputs_pre_cob.get('CONFIG_MARGENS_COBERTURAS.csv', nrows=10)
 
-        'PREMIO': 'float64',
-        'COMISSAO_COBRANCA': 'float64',
-        'COMISSAO_MEDIACAO': 'float64',
-        'COMISSAO_CORRETAGEM': 'float64',
-        'COMISSAO_PROTOCOLO': 'float64',
-        'PREMIO_COMISSAO': 'float64',
+    dic_cod = {
+        'RAMO': 2, 'TRATADO': 3, 'APOLICE': 7, 'MODALIDADE': 2, 'SUBMODALIDADE': 3, 'CODIGO': 3, 'CODMOV': 2
     }
 
-
-    def formata_tabela_por_tipos(tabela, colunas, table_name):
-        log.debug(f'Selecting the appropriate columns from the {table_name} table')
-        df = tabela.astype({col: colunas_utilizadas[col] for col in colunas_utilizadas.keys() if col in colunas})
-        log.debug(f'The {table_name} table contains {len(df)} lines and {len(df.columns)} columns')
-        return df
-
-
-    tabela_premios = formata_tabela_por_tipos(tabela_premios, [
-        'BRAND', 'DATAPROC', 'CODIGO', 'CODMOV', 'CODSIT', 'RAMO', 'APOLICE', 'PREMIO'
-    ], table_name='premiums')
-
-    tabela_resseguro = formata_tabela_por_tipos(tabela_resseguro, [
-        'BRAND', 'DATAPROC', 'CODMOV', 'CODSIT', 'RAMO', 'APOLICE', 'TRATADO', 'PREMIO'
-    ], table_name='reinsurance')
-
-    tabela_comissoes = formata_tabela_por_tipos(tabela_comissoes, [
-        'BRAND', 'DATAPROC', 'CODIGO', 'CODMOV', 'CODSIT', 'RAMO', 'APOLICE',
-        'COMISSAO_COBRANCA', 'COMISSAO_MEDIACAO', 'COMISSAO_CORRETAGEM', 'COMISSAO_PROTOCOLO', 'PREMIO_COMISSAO'
-    ], table_name='commissions')
-
-    config_coberturas = formata_tabela_por_tipos(config_coberturas, [
-        'RAMO', 'MODALIDADE', 'SUBMODALIDADE', 'CODIGO', 'TRATADO', 'PRODUTO', 'MARGEM', 'RAMO_ALLOC',
-        'COMISSAO_COBRANCA_ALLOC', 'COMISSAO_MEDIACAO_ALLOC', 'COMISSAO_CORRETAGEM_ALLOC', 'COMISSAO_PROTOCOLO_ALLOC'
-    ], table_name='config')
-
-    log.debug('Checking that the config table has the appropriate zeros on columns MODALIDADE, SUBMODALIDADE e CODIGO')
-    if config_coberturas['MODALIDADE'].str.len().max() < 2 or config_coberturas['SUBMODALIDADE'].str.len().max() < 2 \
-            or config_coberturas['CODIGO'].str.len().max() < 3:
-        mensg = 'The config table does not have the appropriate format:' \
-                '(ex: found 2 instead of 002) probably was open in Excel and saved'
-        log.warning(mensg)
-        raise Warning(mensg)
-    else:
-        log.debug('The config table has the appropriate format')
-    """
-    log.debug(
-        'Adding the columns MODALIDADE e SUBMODALIDADE to the premiums table to permit the join with the config table'
+    df_reinsurance = mr.df.remove.column_name_sequence(df_reinsurance, 'HRECRES')
+    df_reinsurance = mr.df.format.as_set_len_code(df_reinsurance, dic_cod)
+    df_reinsurance = df_reinsurance.assign(
+        PREMIO=lambda x: x['PREMIO'].map(lambda p: float('0' + p if p[0] == '.' else p))
     )
-    tabela_premios = adiciona_modalidade(tabela_premios, dicionario_de_modalidades)
-    log.debug(f'The premiums table contains {len(tabela_premios)} lines and {len(tabela_premios.columns)} columns')
+
+    df_config = mr.df.format.as_set_len_code(df_config, dic_cod)
     """
-
-
-if __name__ == '__main__':
-    df_premiums = db['FM_HRECICOBERTURASANO', {'nrows': 10}]
-    df_reinsurance = db['FM_HRECRESSEGUROANO', {'nrows': 10}]
-    df_commissions = db['FM_HRECICOBERTURASANO_COMISSAO', {'nrows': 10}]
-    df_config = db['CONFIG_MARGENS_COBERTURAS', {'nrows': 10}]
-
     print(df_premiums)
-    """
-    group = df_premiums.groupby('APOLICE')
-    print(group.groups)
-
-    for i, df in group:
-        print(i)
-        print(df)
-
-    regrouped = group.apply(lambda x: x)
-    print(regrouped)
-    
-    """
     print(df_reinsurance)
     print(df_commissions)
     print(df_config)
+    """
+    def get_reinsurance_premiumns(df_reinsurance, df_config):
+        id_reinsurance = ['BRAND', 'RAMO', 'APOLICE', 'RECIBO', 'TRATADO']
+
+        df_config = df_config[['BRAND', 'RAMO', 'CODIGO', 'TRATADO', 'MARGEM']].drop_duplicates().groupby(
+            ['BRAND', 'RAMO', 'TRATADO']
+        ).mean().reset_index()
+        print(df_reinsurance.query('APOLICE == "9961967"'))
+        df_reinsurance = df_reinsurance.query('CODMOV == "01"')[id_reinsurance + ['PREMIO']].groupby(id_reinsurance, dropna=False).sum().reset_index()
+        df_reinsurance_test = mr.df.count.unique(df_reinsurance, ['PREMIO'], id_reinsurance)
+
+        df_reinsurance = df_reinsurance.merge(df_config, how='left', validate='many_to_one')[
+            lambda x: x['MARGEM'].notnull()
+        ].assign(
+            PREMIO_RESS=lambda x: x['MARGEM'] * x['PREMIO']
+        )[['BRAND', 'RAMO', 'APOLICE', 'RECIBO', 'TRATADO', 'PREMIO_RESS']]
+        return df_reinsurance, df_config
+
+
+    df_reinsurance, df_config = get_reinsurance_premiumns(df_reinsurance, df_config)
+
+    print(df_config)
+    print(df_reinsurance.sample(100))
+
+
 
 
