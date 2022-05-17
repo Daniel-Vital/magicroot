@@ -21,8 +21,14 @@ def join(*args, on, n=1):
             columns_in_previous = select.columns_in_list(df_sample, columns=on)
             columns_in_current = select.columns_in_list(df, columns=on)
             common_columns = list({*columns_in_previous}.intersection({*columns_in_current}))
-            key = df_sample[common_columns].to_dict('list')
-            df_sample = df[df[common_columns].isin(key).any(axis=1)]
+            key = df_sample[common_columns].drop_duplicates().to_dict('list')
+            df_sample = df[df[common_columns].isin(key).all(axis=1)]
         result.append(df_sample)
 
     return result
+
+
+def simple_join(left, right, on, n):
+    left, right = join(left, right, on=on, n=n)
+    joined = left.merge(right, on=on)
+    return left, right, joined
