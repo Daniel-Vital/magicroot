@@ -7,6 +7,7 @@ from . import discount
 from . import format
 from . import remove
 from . import reshape
+from . import sample
 from . import select
 
 

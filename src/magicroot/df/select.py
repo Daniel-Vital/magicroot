@@ -16,3 +16,7 @@ def numeric_columns(df, invert=False, remove=None):
     if remove:
         columns.remove(remove)
     return columns
+
+
+def columns_in_list(*args, columns):
+    return [column for column in columns for df in args if column in df.columns]

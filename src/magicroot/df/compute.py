@@ -150,7 +150,7 @@ def discounted_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_',
     """
     return df.assign(
         **{
-            prefix + column + suffix: lambda x: x[column] * x[disc_rate_column]
+            prefix + column + suffix: df[column] * df[disc_rate_column]
             for column in cashflow_columns
         }
     )

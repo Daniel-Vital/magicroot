@@ -8,30 +8,29 @@ import src.magicroot as mr
 
 
 if __name__ == '__main__':
+    group_out_folder = mr.os.home['lus\\ifrs 17\\motor de calculo\\data model tables\\outputs\\grouping\\reperforming']
+    dm_ifrs17 = mr.os.home['LUS\\IFRS 17\\Motor de calculo\\tables\\input\\name change']
+
+    # print(dm_ifrs17)
+
+    df_icg_x_curve = dm_ifrs17.get('group_x_curve')
+    df_rf_x_rf_curve = dm_ifrs17.get('factor_x_risk', encoding='UTF-8')
+    df_quotes = dm_ifrs17.get('quotes', encoding='UTF-8')
+
+    df_icg_x_curve = df_icg_x_curve.rename(columns={'CURRENT_CURVE_ID': 'CURVE_ID'})
+    df_rf_x_rf_curve = df_rf_x_rf_curve.rename(columns={'RISK_FACTOR_ID': 'QUOTE_ID'})
+
+    print(df_quotes.head())
+    print(df_rf_x_rf_curve.head())
+    print(df_icg_x_curve.head())
+    # print('----------------')
+    # print(mr.df.sample.columns_in_list(df_icg_x_curve, columns=['CURVE_ID']))
+    print('----------------')
+    print(*mr.df.sample.join(df_icg_x_curve, df_rf_x_rf_curve, df_quotes, on=['INSURANCE_CONTRACT_GROUP_ID', 'QUOTE_ID', 'CURVE_ID'], n=1), sep='\n\n')
 
 
-    df_insurance_cashflow = dm_ifrs17.get('insurance_cashflow')
-    df = group_out_folder.get('insurance_contract_disc.csv', index_col=0)
 
-    query = 'ALLOC_INSURANCE_CONTRACT_GROUP_ID == "D02100C2020" & CASHFLOW_TYPE_CD == "EXR"'
-    # print(df_insurance_cashflow.sample(100))
-
-    df = df.query(query).sample(10)
-
-    # print(df)
-
-    # df = mr.df.format.as_date(df, ['CASHFLOW_DT'])
-    # df = mr.df.format.as_date(df, ['CASHFLOW_DT', 'REPORTING_DT'])
-    # df = mr.df.format.as_date(df, ['REPORTING_DT', 'CASHFLOW_DT'])
-    # df = mr.df.compute.duration(df, 'BEGIN_COV_DT', 'END_COV_DT', computed_column='Cohort_dur', errors='coerce')
-    # df = mr.df.compute.duration(df, 'BEGIN_COV_DT', 'REPORTING_DT', computed_column='COhort_passed', errors='coerce')
-    # df['x'] = df['Cohort_dur'] / df['COhort_passed']
-    # print(mr.df.compute.duration(df, 'BEGIN_COV_DT', 'REPORTING_DT', computed_column='COhort_passed', errors='coerce'))
-    # df['x'] = mr.df.compute.duration(df, 'BEGIN_COV_DT', 'REPORTING_DT', computed_column='COhort_passed', errors='coerce') / mr.df.compute.duration(df, 'BEGIN_COV_DT', 'END_COV_DT', computed_column='Cohort_dur', errors='coerce')
-    df = mr.df.compute.date_perc(df, 'BEGIN_COV_DT', 'END_COV_DT', 'REPORTING_DT')
-
-    print(df)
-
+    # print(df_insurance_cashflow)
 
 # print(os.path.expanduser('~'))
 
