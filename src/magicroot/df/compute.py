@@ -32,7 +32,7 @@ def duration(df, dt_begin, dt_end, computed_column='duration', days=False,  *arg
     )
 
 
-def date_perc(df, dt_begin, dt_end, dt_ref, duration_column='duration_pct'):
+def date_perc(df, dt_begin, dt_end, dt_ref, duration_column='duration_pct',  *args, **kwargs):
     """
     Computes percentage of a date between to other dates
     :param df: Dataframe
@@ -57,7 +57,7 @@ def date_perc(df, dt_begin, dt_end, dt_ref, duration_column='duration_pct'):
         :column duration_column: computed column
     result table
     """
-    return format.as_date(df, [dt_begin, dt_end, dt_ref]).assign(
+    return df.assign(
         **{
             duration_column: lambda x:
             duration(x, dt_begin, dt_ref)['duration'] / duration(x, dt_begin, dt_end)['duration']

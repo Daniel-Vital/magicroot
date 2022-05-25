@@ -28,7 +28,7 @@ def join(*args, on, n=1):
     return result
 
 
-def simple_join(left, right, on, n):
+def simple_join(left, right, on, n=1, *args, **kwargs):
     left, right = join(left, right, on=on, n=n)
-    joined = left.merge(right, on=on)
+    joined = left.merge(right, on=on, *args, **kwargs)
     return left, right, joined
