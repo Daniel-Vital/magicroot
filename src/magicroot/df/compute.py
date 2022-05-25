@@ -57,7 +57,7 @@ def date_perc(df, dt_begin, dt_end, dt_ref, duration_column='duration_pct',  *ar
         :column duration_column: computed column
     result table
     """
-    return df.assign(
+    return format.as_date(df, [dt_begin, dt_end, dt_ref],  *args, **kwargs).assign(
         **{
             duration_column: lambda x:
             duration(x, dt_begin, dt_ref)['duration'] / duration(x, dt_begin, dt_end)['duration']
