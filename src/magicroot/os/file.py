@@ -1,28 +1,45 @@
 from .parcers import *
+from .navigator import Navigator
+from .parcer_base import Parser
 from ..beta.fileleaf import extensions
+import os
+import shutil
 import logging
 
 log = logging.getLogger('MagicRoot.databranch.os.file')
 
 
-class File:
+class ParcerNotFound(FileNotFoundError):
+    pass
+
+
+class File(Navigator, Parser):
     def __init__(self, path):
+        super(File, self).__init__(path)
         log.debug(f'Creating new file object \'{path}\'')
-        self.path = path
+        # self.path = path
 
     def __str__(self):
-        return 'gotta you'
+        str = f'No parcer was found for extension type \'{self.extension}\'\n {self.path}'
+        return str
 
     def __repr__(self):
         return self.__str__()
 
     def read(self, *args, **kwargs):
         log.debug(f'Reading \'{self.path}\'')
-        return self._select_parser().read(*args, **kwargs)
+        try:
+            return self._select_parser().read(*args, **kwargs)
+        except ParcerNotFound:
+            return self
 
     def save(self, obj, *args, **kwargs):
         log.debug(f'Saving \'{self.path}\'')
-        self._select_parser().save(obj, *args, **kwargs)
+        try:
+            self._select_parser().save(obj, *args, **kwargs)
+        except ParcerNotFound:
+            print(f'coping from {obj.path} \n to {self.path}')
+            # shutil.copyfile(obj.path, os.path.join(self.path, obj.tail))
 
     def peak(self):
         extension = extensions.get(self.path)
@@ -41,3 +58,5 @@ class File:
             if extension == '.' + Parcer.extension:
                 log.debug(f'Selected \'{Parcer.extension}\'')
                 return Parcer(self.path)
+
+        raise ParcerNotFound(f'No parcer was found for extension type \'{extension}\'')

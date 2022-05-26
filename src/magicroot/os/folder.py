@@ -47,6 +47,8 @@ class Folder(Navigator):
     def new_file(self, name, obj, *args, **kwargs):
         self.log(f'Creating new file \'{name}\'')
         new_file = os.path.join(self.path, name)
+        File(new_file)
+        print(f'new file on {new_file} \n original {obj.path}')
         File(new_file).save(obj, *args, **kwargs)
         self.log(f'Successfully created new file \'{name}\'')
 
@@ -71,8 +73,21 @@ class Folder(Navigator):
         return Folder(super().search(*args, **kwargs).path)
 
     def get(self, file, *args, **kwargs):
+        log.debug(f'Retriving \'{file}\' from \'{self.path}\'')
         file_path = os.path.join(self.search(file).path)
+        print('-----------------------------------')
         return File(file_path).read(*args, **kwargs)
+
+    def copy(self, to, objs=None):
+        objs = objs if objs is not None else self.contents
+        objs = objs if isinstance(objs, list) else [objs]
+        for obj in objs:
+            obj = File(self.search(obj).path)
+            print(f'new file on {to.path} \n with name {obj.tail} \n original {obj.path}')
+            to.new_file(obj.tail, obj)
+
+    def change(self, objs=None, to_extension=None):
+        objs = objs if objs is not None else self.contents
 
 
 home = Folder(os.path.expanduser('~'))

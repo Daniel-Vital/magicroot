@@ -19,6 +19,7 @@ class Parser:
 
     def read(self, path, *args, **kwargs):
         pass
+        # return re(filepath_or_buffer=self.path, *args, **self.read_settings(**kwargs))
 
     def peak(self, path, *args, **kwargs):
         pass
