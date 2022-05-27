@@ -1,6 +1,8 @@
 import os
 import shutil
 from ..beta import fileleaf as fl
+import zipfile
+import ntpath
 import datetime
 from .navigator import Navigator
 from .file import File
@@ -37,22 +39,20 @@ class Folder(Navigator):
 
         Folder.logger.debug(msg)
 
-    def new(self, name, obj=None):
-        extension = extensions.get(name)
-        if extension is None:
-            self.new_directory(name)
-        else:
-            self.new_file(name, obj)
+    def new(self, folder=None, file=None, with_obj=None):
+        if folder is not None:
+            self.new_folder(folder)
+            return Folder(os.path.join(self.path, folder))
+        if file is not None:
+            self.new_file(file, with_obj)
 
     def new_file(self, name, obj, *args, **kwargs):
         self.log(f'Creating new file \'{name}\'')
         new_file = os.path.join(self.path, name)
-        File(new_file)
-        print(f'new file on {new_file} \n original {obj.path}')
         File(new_file).save(obj, *args, **kwargs)
         self.log(f'Successfully created new file \'{name}\'')
 
-    def new_directory(self, name):
+    def new_folder(self, name):
         self.log(f'Creating new folder \'{name}\'')
         self._new(name)
         self.log(f'Successfully created new folder \'{name}\'')
@@ -63,11 +63,13 @@ class Folder(Navigator):
             os.makedirs(new_folder)
 
     def remove(self, name):
-        self.log(f'Removing folder \'{name}\'')
+        self.log(f'Removing \'{name}\'')
         folder = os.path.join(self.path, name)
-        if os.path.exists(folder):
+        if os.path.isdir(folder):
             shutil.rmtree(folder)
-        self.log(f'Successfully removed folder \'{name}\'')
+        if os.path.isfile(folder):
+            os.remove(folder)
+        self.log(f'Successfully removed \'{name}\'')
 
     def search(self, *args, **kwargs):
         return Folder(super().search(*args, **kwargs).path)
@@ -75,19 +77,34 @@ class Folder(Navigator):
     def get(self, file, *args, **kwargs):
         log.debug(f'Retriving \'{file}\' from \'{self.path}\'')
         file_path = os.path.join(self.search(file).path)
-        print('-----------------------------------')
         return File(file_path).read(*args, **kwargs)
 
-    def copy(self, to, objs=None):
-        objs = objs if objs is not None else self.contents
+    def copy(self, to, objs=None, with_new_extension=None):
+        objs = objs if objs is not None else self.files
         objs = objs if isinstance(objs, list) else [objs]
         for obj in objs:
             obj = File(self.search(obj).path)
-            print(f'new file on {to.path} \n with name {obj.tail} \n original {obj.path}')
-            to.new_file(obj.tail, obj)
+            file_name = obj.tail
+            if with_new_extension:
+                file_name = File(obj.path).change(extension=with_new_extension).tail
+            to.new_file(file_name, obj)
 
-    def change(self, objs=None, to_extension=None):
-        objs = objs if objs is not None else self.contents
+    def unzip(self, to=None, objs=None):
+        """
+        Unzips a file (.zip) to the given folder
+        :param to: folder to which to unzip the files
+        :param objs:
+        :return: None
+        """
+        objs = objs if objs is not None else self.files_with(extension='.zip')
+        print(objs)
+        objs = objs if isinstance(objs, list) else [objs]
+        to = to if to is not None else self
+
+        for zip in objs:
+            zip_path = os.path.join(self.path, zip)
+            with zipfile.ZipFile(zip_path, "r") as zip_ref:
+                zip_ref.extractall(to.path)
 
 
 home = Folder(os.path.expanduser('~'))

@@ -2,6 +2,7 @@ import os
 import re
 import getpass
 from fuzzywuzzy import process
+import ntpath
 # from .file import File
 from ..beta.fileleaf import extensions
 import subprocess
@@ -73,6 +74,10 @@ class Path(SubPath):
         return str
 
     @property
+    def files(self):
+        return [f for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
+
+    @property
     def contents(self):
         return os.listdir(self.path)
 
@@ -85,6 +90,9 @@ class Path(SubPath):
     def extension(self):
         return extensions.get(self.path)
 
+    def files_with(self, extension):
+        return [file for file in self.files if Path(file).extension == extension]
+
     def _split_on_user(self):
         log.debug(f'Splitting {self.path} on user: {self.user}')
         return re.split(self.user, self.path)
@@ -94,6 +102,17 @@ class Path(SubPath):
 
     def isfile(self):
         return os.path.isfile(self.path)
+
+    def split(self):
+        base_path, tail = ntpath.split(self.path)
+        tail = tail or ntpath.basename(self.path)
+        file_name, extension = os.path.splitext(tail)
+        return base_path, file_name, extension
+
+    def change(self, extension):
+        base_path, file_name, _ = self.split()
+        self.path = os.path.join(base_path, file_name + extension)
+        return self
 
     @classmethod
     def home(cls):
@@ -107,14 +126,19 @@ class Navigator(Path):
     def __init__(self, path):
         if len(path) > 256:
             msg = f'The path provided is too long ({len(path)}>256) ' \
-                  f'try os.path.exists(path) or os.path.isfile(path)'
+                  f'try os.path.exists(path) or os.path.isfile(path) \n path: {path}'
             log.error(msg)
             raise PathNotFound(msg)
-        if not os.path.exists(path) and not os.path.isfile(path):
-            msg = f'The path \'{path}\' provided to Navigator is not a valid path, ' \
-                  f'try os.path.exists(path) or os.path.isfile(path)'
+        """
+        if not (os.path.exists(path) or os.path.isfile(path)):
+            msg = f'The path provided to Navigator is not a valid path, ' \
+                  f'try os.path.exists(path) or os.path.isfile(path) \npath: \'{path}\' '
             log.error(msg)
-            raise PathNotFound(msg)
+            log.debug(f'{os.path.isfile(path)} {os.path.exists(path)}')
+            raise PathNotFound(msg) 
+        
+        """
+
         super().__init__(path)
 
     def __getitem__(self, key):

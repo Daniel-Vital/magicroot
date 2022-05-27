@@ -38,8 +38,7 @@ class File(Navigator, Parser):
         try:
             self._select_parser().save(obj, *args, **kwargs)
         except ParcerNotFound:
-            print(f'coping from {obj.path} \n to {self.path}')
-            # shutil.copyfile(obj.path, os.path.join(self.path, obj.tail))
+            shutil.copyfile(obj.path, self.path)
 
     def peak(self):
         extension = extensions.get(self.path)

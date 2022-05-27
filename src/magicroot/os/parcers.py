@@ -2,6 +2,7 @@ from openpyxl import load_workbook
 import pandas as pd
 from .parcer_base import Parser, JSON
 import logging
+import shutil
 
 log = logging.getLogger('MagicRoot.databranch.os.parcers')
 
@@ -60,4 +61,22 @@ class Excel(Parser):
         return self.read(encoding='latin-1', *args, **kwargs).__repr__()
 
 
-DEFINED_PARCERS = [CSV, SAS, Excel]
+class Text(Parser):
+    extension = 'txt'
+
+    def read(self, *args, **kwargs):
+        return open(self.path, *args, **kwargs)
+
+    def save(self, obj, *args, **kwargs):
+        """
+        if obj is not None:
+            self.read().write(obj)
+        """
+        shutil.copyfile(obj.path, self.path)
+        # raise NotImplementedError('To save to text files read with \'w\'')
+
+    def peak(self, *args, **kwargs):
+        return self.read(encoding='latin-1', *args, **kwargs).__repr__()
+
+
+DEFINED_PARCERS = [CSV, SAS, Excel, Text]

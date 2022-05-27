@@ -2,44 +2,67 @@
 
 import src.magicroot as mr
 import pandas as pd
-import logs
-import os
+import re
+import warnings
 import logging
 log = logging.getLogger(__name__)
 
 
 if __name__ == '__main__':
-    path = r'C:\Users\daalcantara\Lusitania\IFRS17 - IFRS17-Implementação - Programa\Outputs\08. Dados\03. Execução do Plano\8.05 - Identificação de Requisitos de Atuariado\8.5.10 - Atuariado - Testes de aceitação de negócio - DM\8.5.10.1 Datawarehouse\DAT_SINISTROS_GRAVES.csv'
-    x = os.path.exists(path)
-    print(x)
-    x = os.path.isfile(path)
-    print(x)
+    folder_input = mr.os.home['Lus\\IFRS 17\\outputs\\Implementacao motor\\integracao\\inputs']
 
-    folder_contab = mr.os.home['Lus\\IFRS 17\\outputs\\Implementacao motor\\integracao\\inputs\\extracted']
-    # folder_treated = mr.os.home['Lus\\IFRS 17\\outputs\\Implementacao motor\\integracao\\treated']
+    # 01 creates folder for auxiliary files
+    folder_aux = folder_input.new(folder='01 aux files')
 
-    # folder_dir = mr.os.home['Lus\\IFRS 17\\outputs\\Implementacao\\integracao\\inputs\\extracted']
-    print(folder_contab.get('LSP_010_20220225_ACDOCA_1.fil').tail)
-    # folder_contab.copy(to=folder_treated, objs='LSP_010_20220225_ACDOCA_1.fil')
+    # 02 unzips files to specifically created folder
+    folder_unziped = folder_aux.new(folder='01 unziped')
+    # folder_input.unzip(to=folder_unziped)
 
-    log.debug('-----------------------------------------------------------')
-    dm_atuariado = mr.os.home['LUS\\IFRS 17\\outputs\\dados\\execucao plano\\8.05 - Identificação de Requisitos de Atuariado\\8.5.10 - Atu - Testes de aceitação de neg - DM\\datawarehouse']
+    # 03 changes extension of unziped files to specifically created folder
+    folder_txt = folder_aux.new(folder='02 txts')
+    folder_unziped.copy(to=folder_txt, with_new_extension='.txt')
+    folder_txt.remove('LSP_010_20220225.txt')
 
-    print(dm_atuariado)
+    # 04 creates dataframe from txt files
+    lines_per_file = 10000000
+    dic = {}
+    for file in folder_txt.files:
+        n_file = int(re.findall('_\d+\.', file)[-1][1:-1])
+        threw_warning = False
+        for n_line, line in enumerate(folder_txt.get(file, mode='r', encoding='latin-1')):
+            if n_line < lines_per_file:
+                row = line[:103].split() + [line[103:-2]]
 
-    df_sinistros_graves = dm_atuariado.get('DAT_SINISTROS_GRAVES.csv', nrows=100)
-    df_pagamentos_at = dm_atuariado.get('DAT_PAGAMENTOS_AT.csv', nrows=100)
+                def split_columns(on):
+                    row.insert(1, row[0][-on:])
+                    row[0] = row[0][:-on]
 
-    print(df_sinistros_graves)
+                for split in [3, 10, 1, 10, 4, 4]:
+                    split_columns(split)
 
-    """
+                del row[7:9]
+                row.append(n_file)
+                dic[n_line + n_file * lines_per_file] = row
+            elif not threw_warning:
+                msg = f'Did not read all lines form {file}'
+                warnings.warn(msg)
 
-    
-    
-    """
+    df = pd.DataFrame.from_dict(
+        dic, orient='index',
+        columns=['ledger', 'chart_of_accounts', 'year', 'source', 'movement', 'account', 'currency', 'amount',
+                 'Description', 'file']
+    ).assign(
+        amount=lambda x: x['amount'].mask(
+            x['amount'].str.endswith('-'), '-' + x['amount'].str.slice(stop=-1)
+        ).astype(float)
+    )
+    folder_input.new_file('treated_data.csv', df)
 
 
-    # print(folder_dir)
 
 
+
+    # folder_treated_2.get('LSP_010_20220225_ACDOCA_1.txt', mode='w', encoding='utf-8').write(line)
+
+    # folder_treated.open()
 
