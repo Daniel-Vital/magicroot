@@ -1,5 +1,9 @@
+"""
+This file contains the functions used to compute useful values for predetermined dataframe structures
+"""
 from . import format
 import numpy as np
+import pandas as pd
 
 
 def duration(df, dt_begin, dt_end, computed_column='duration', days=False,  *args, **kwargs):
@@ -203,3 +207,63 @@ def discounted_components(df, cashflow_columns, prefix='comp_', suffix=''):
             for cashflow_column, disc_cashflow_column in cashflow_columns.items()
         }
     )
+
+
+def intersection_days(df, *args, intersection_column='intersection_dates'):
+    """
+    Computes the intersection days between all given time windows
+    All windows should be provided in the format ('begin column', 'end column')
+    :return:
+    """
+    return df.assign(
+        **{
+            intersection_column: lambda x: np.minimum(
+                *[x[window[1]] for window in args]
+            ) - np.maximum(
+                *[x[window[0]] for window in args]
+            )
+        }
+    )
+
+
+def union_days(df, *args, union_column='union_dates'):
+    """
+    Computes the union days between all given time windows
+    All windows should be provided in the format ('begin column', 'end column')
+    :return:
+    """
+    return df.assign(
+        **{
+            union_column: lambda x: np.maximum(
+                *[x[window[1]] for window in args]
+            ) - np.minimum(
+                *[x[window[0]] for window in args]
+            )
+        }
+    )
+
+
+def intersection_days_perc(df, *args, intersection_column='perc_intersection_dates'):
+    """
+    Computes the intersection days percentage between all given time windows
+    All windows should be provided in the format ('begin column', 'end column')
+    :return:
+    """
+    return df.assign(
+        **{
+            intersection_column: lambda x:
+            intersection_days(df, *args, intersection_column='intersection_dates')['intersection_dates'] /
+            union_days(df, union_column='union_dates', *args)['union_dates']
+        }
+    )
+
+
+def eom(df, columns=None, prefix='eom_', suffix='', *args, **kwargs):
+    return format.as_date(df, columns, *args, **kwargs).assign(
+        **{
+            prefix + column + suffix: lambda x: (x[column] - pd.to_timedelta(1, unit='day')) + pd.offsets.MonthEnd()
+            for column in columns
+        }
+    )
+
+

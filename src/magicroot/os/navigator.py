@@ -78,6 +78,10 @@ class Path(SubPath):
         return [f for f in os.listdir(self.path) if os.path.isfile(os.path.join(self.path, f))]
 
     @property
+    def directories(self):
+        return [f for f in os.listdir(self.path) if os.path.isdir(os.path.join(self.path, f))]
+
+    @property
     def contents(self):
         return os.listdir(self.path)
 

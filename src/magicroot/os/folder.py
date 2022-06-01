@@ -56,11 +56,16 @@ class Folder(Navigator):
         self.log(f'Creating new folder \'{name}\'')
         self._new(name)
         self.log(f'Successfully created new folder \'{name}\'')
+        return Folder(os.path.join(self.path, name))
 
     def _new(self, name):
         new_folder = os.path.join(self.path, name)
         if not os.path.exists(new_folder):
             os.makedirs(new_folder)
+
+    def clear(self):
+        for obj in self.contents:
+            self.remove(obj)
 
     def remove(self, name):
         self.log(f'Removing \'{name}\'')
@@ -89,6 +94,18 @@ class Folder(Navigator):
                 file_name = File(obj.path).change(extension=with_new_extension).tail
             to.new_file(file_name, obj)
 
+    def move(self, to, objs=None, with_new_extension=None):
+        objs = objs if objs is not None else self.files
+        objs = objs if isinstance(objs, list) else [objs]
+        for obj in objs:
+            obj = File(self.search(obj).path)
+            file_name = obj.tail
+            file_name_new = file_name
+            if with_new_extension:
+                file_name_new = File(obj.path).change(extension=with_new_extension).tail
+            to.new_file(file_name_new, obj)
+            self.remove(file_name)
+
     def unzip(self, to=None, objs=None):
         """
         Unzips a file (.zip) to the given folder
@@ -105,6 +122,22 @@ class Folder(Navigator):
             zip_path = os.path.join(self.path, zip)
             with zipfile.ZipFile(zip_path, "r") as zip_ref:
                 zip_ref.extractall(to.path)
+
+    def groupby(self, file_name=None):
+        """
+        Group files in subfolder using a mapping function
+        :return:
+        """
+        grouping_func = file_name
+        for file_name in self.files:
+            groups = grouping_func(file_name)
+            for group in groups:
+                group_folder = self.new_folder(group)
+                self.move(to=group_folder, objs=file_name)
+
+    @property
+    def folders(self):
+        return [Folder(os.path.join(self.path, f)) for f in self.directories]
 
 
 home = Folder(os.path.expanduser('~'))

@@ -5,6 +5,7 @@ from . import compute
 from . import count
 from . import discount
 from . import format
+from . import melt
 from . import remove
 from . import reshape
 from . import sample

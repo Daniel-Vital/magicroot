@@ -72,7 +72,10 @@ class Text(Parser):
         if obj is not None:
             self.read().write(obj)
         """
-        shutil.copyfile(obj.path, self.path)
+        try:
+            shutil.copyfile(obj.path, self.path)
+        except shutil.SameFileError:
+            pass
         # raise NotImplementedError('To save to text files read with \'w\'')
 
     def peak(self, *args, **kwargs):
