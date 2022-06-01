@@ -34,6 +34,10 @@ class SubPath:
         return self.components[-1]
 
     @property
+    def name(self):
+        return self.tail
+
+    @property
     def without_root(self):
         return os.path.join(*self.components[1:])
 
