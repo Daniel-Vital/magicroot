@@ -4,8 +4,6 @@ from logs import *
 from config import *
 
 
-
-
 log = log.getLogger('Main')
 
 df = db['FM_SINISTROS', {'on_bad_lines': 'skip'}]

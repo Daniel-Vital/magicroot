@@ -7,3 +7,7 @@ def empty(shape, *args, **kwargs):
     canvas[:] = np.NaN
     return pd.DataFrame(canvas, *args, **kwargs)
 
+
+def const_col(df, const, *args, **kwargs):
+    canvas = np.ones(len(df)) * const
+    return pd.Series(canvas, *args, **kwargs)
