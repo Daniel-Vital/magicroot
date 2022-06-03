@@ -9,5 +9,6 @@ def empty(shape, *args, **kwargs):
 
 
 def const_col(df, const, *args, **kwargs):
-    canvas = np.ones(len(df)) * const
-    return pd.Series(canvas, *args, **kwargs)
+    s = pd.Series(np.ones(len(df)) * const, *args, **kwargs)
+    s.index = df.index
+    return s
