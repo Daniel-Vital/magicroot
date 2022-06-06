@@ -12,11 +12,12 @@ def date_interval(
         begin_period_column='begin_period',
         end_period_column='end_period',
         *args, **kwargs):
+    offset = pd.offsets.MonthEnd() if freq == 'M' else pd.offsets.YearEnd()
     return format.as_date(df[[begin_dt_column, end_dt_column]], columns=None, *args, **kwargs).apply(
         lambda x: pd.Series(
             pd.date_range(
                 start=x[begin_dt_column],
-                end=(x[end_dt_column] - pd.to_timedelta(1, unit='day')) + pd.offsets.MonthEnd(),
+                end=(x[end_dt_column] - pd.to_timedelta(1, unit='day')) + offset,
                 freq=freq
             )
         ), axis=1
