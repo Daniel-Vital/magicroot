@@ -243,7 +243,7 @@ def union_days(df, *args, union_column='union_dates'):
     )
 
 
-def intersection_days_perc(df, *args, intersection_column='perc_intersection_dates'):
+def intersection_days_perc(df, *args, intersection_column='perc_intersection_dates', shift=0):
     """
     Computes the intersection days percentage between all given time windows
     All windows should be provided in the format ('begin column', 'end column')
@@ -252,8 +252,8 @@ def intersection_days_perc(df, *args, intersection_column='perc_intersection_dat
     return df.assign(
         **{
             intersection_column: lambda x:
-            intersection_days(df, *args, intersection_column='intersection_dates')['intersection_dates'] /
-            union_days(df, union_column='union_dates', *args)['union_dates']
+            intersection_days(df, *args, intersection_column='intersection_dates')['intersection_dates'] + shift /
+            union_days(df, union_column='union_dates', *args)['union_dates'] + shift
         }
     )
 
