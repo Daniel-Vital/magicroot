@@ -1,9 +1,9 @@
 
 
-def cumsum(df, columns, by, order):
-    return df.sort_values(by + order)[by + columns].groupby(by).cumsum()
+def cumsum(columns, by, order):
+    return lambda x: x.sort_values(by + order)[by + columns].groupby(by).cumsum()
 
 
-def sum(df, columns, by):
-    return df[by + columns].groupby(by).sum()
+def sum(columns, by):
+    return lambda x: x[by + columns].groupby(by).sum()
 
