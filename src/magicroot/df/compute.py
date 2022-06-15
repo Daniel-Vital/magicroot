@@ -253,8 +253,8 @@ def intersection_days_perc(*args, intersection_column='perc_intersection_dates',
     return lambda df: df.assign(
         **{
             intersection_column: lambda x:
-            (intersection_days(df, *args, intersection_column='intersection_dates')['intersection_dates'] + timedelta(days=shift_days)) /
-            (union_days(df, union_column='union_dates', *args)['union_dates'] + timedelta(days=shift_days))
+            (intersection_days(*args, intersection_column='intersection_dates')(x)['intersection_dates'] + timedelta(days=shift_days)) /
+            (union_days(union_column='union_dates', *args)(x)['union_dates'] + timedelta(days=shift_days))
         }
     )
 
