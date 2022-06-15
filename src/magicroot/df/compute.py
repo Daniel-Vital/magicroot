@@ -210,13 +210,13 @@ def discounted_components(df, cashflow_columns, prefix='comp_', suffix=''):
     )
 
 
-def intersection_days(df, *args, intersection_column='intersection_dates'):
+def intersection_days(*args, intersection_column='intersection_dates'):
     """
     Computes the intersection days between all given time windows
     All windows should be provided in the format ('begin column', 'end column')
     :return:
     """
-    return df.assign(
+    return lambda df: df.assign(
         **{
             intersection_column: lambda x: np.minimum(
                 *[x[window[1]] for window in args]
@@ -227,13 +227,13 @@ def intersection_days(df, *args, intersection_column='intersection_dates'):
     )
 
 
-def union_days(df, *args, union_column='union_dates'):
+def union_days(*args, union_column='union_dates'):
     """
     Computes the union days between all given time windows
     All windows should be provided in the format ('begin column', 'end column')
     :return:
     """
-    return df.assign(
+    return lambda df: df.assign(
         **{
             union_column: lambda x: np.maximum(
                 *[x[window[1]] for window in args]
@@ -244,13 +244,13 @@ def union_days(df, *args, union_column='union_dates'):
     )
 
 
-def intersection_days_perc(df, *args, intersection_column='perc_intersection_dates', shift_days=0):
+def intersection_days_perc(*args, intersection_column='perc_intersection_dates', shift_days=0):
     """
     Computes the intersection days percentage between all given time windows
     All windows should be provided in the format ('begin column', 'end column')
     :return:
     """
-    return df.assign(
+    return lambda df: df.assign(
         **{
             intersection_column: lambda x:
             (intersection_days(df, *args, intersection_column='intersection_dates')['intersection_dates'] + timedelta(days=shift_days)) /
