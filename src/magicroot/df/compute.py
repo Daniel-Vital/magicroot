@@ -236,19 +236,13 @@ def union_days(*args, shift_days=0):
             ) + timedelta(days=shift_days)
 
 
-def intersection_days_perc(*args, intersection_column='perc_intersection_dates', shift_days=0):
+def intersection_days_perc(*args, shift_days=0):
     """
     Computes the intersection days percentage between all given time windows
     All windows should be provided in the format ('begin column', 'end column')
     :return:
     """
-    return lambda df: df.assign(
-        **{
-            intersection_column: lambda x:
-            intersection_days(*args, shift_days=shift_days)(x) /
-            union_days(*args, shift_days=shift_days)(x)
-        }
-    )
+    return lambda df: intersection_days(*args, shift_days=shift_days)(df) / union_days(*args, shift_days=shift_days)(df)
 
 
 def eom(df, columns=None, prefix='eom_', suffix='', *args, **kwargs):
