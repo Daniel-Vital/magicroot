@@ -5,5 +5,7 @@ def cumsum(columns, by, order):
 
 
 def sum(columns, by):
-    return lambda x: x[by + columns].groupby(by).sum()
+    return lambda x: x[by + columns].groupby(by).sum().reset_index().merge(
+        x[by], how='right', validate='one_to_many'
+    )[columns]
 
