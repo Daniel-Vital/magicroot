@@ -210,38 +210,30 @@ def discounted_components(df, cashflow_columns, prefix='comp_', suffix=''):
     )
 
 
-def intersection_days(*args, intersection_column='intersection_dates', shift_days=0):
+def intersection_days(*args, shift_days=0):
     """
     Computes the intersection days between all given time windows
     All windows should be provided in the format ('begin column', 'end column')
     :return:
     """
-    return lambda df: df.assign(
-        **{
-            intersection_column: lambda x: np.minimum(
-                *[x[window[1]] for window in args]
+    return lambda df: np.minimum(
+                *[df[window[1]] for window in args]
             ) - np.maximum(
-                *[x[window[0]] for window in args]
+                *[df[window[0]] for window in args]
             ) + timedelta(days=shift_days)
-        }
-    )
 
 
-def union_days(*args, union_column='union_dates', shift_days=0):
+def union_days(*args, shift_days=0):
     """
     Computes the union days between all given time windows
     All windows should be provided in the format ('begin column', 'end column')
     :return:
     """
-    return lambda df: df.assign(
-        **{
-            union_column: lambda x: np.maximum(
-                *[x[window[1]] for window in args]
+    return lambda df: np.maximum(
+                *[df[window[1]] for window in args]
             ) - np.minimum(
-                *[x[window[0]] for window in args]
+                *[df[window[0]] for window in args]
             ) + timedelta(days=shift_days)
-        }
-    )
 
 
 def intersection_days_perc(*args, intersection_column='perc_intersection_dates', shift_days=0):
@@ -253,8 +245,8 @@ def intersection_days_perc(*args, intersection_column='perc_intersection_dates',
     return lambda df: df.assign(
         **{
             intersection_column: lambda x:
-            (intersection_days(*args, intersection_column='intersection_dates', shift_days=shift_days)(x)['intersection_dates']) /
-            (union_days(*args, union_column='union_dates', shift_days=shift_days)(x)['union_dates'])
+            intersection_days(*args, shift_days=shift_days)(x) /
+            union_days(*args, shift_days=shift_days)(x)
         }
     )
 
