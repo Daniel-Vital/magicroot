@@ -81,7 +81,7 @@ def maturity(from_date, to_date):
 
     :return: func to be applied to a Dataframe
     """
-    return np.maximum(to_date - from_date, timedelta(days=0))
+    return (to_date - from_date).where(from_date > to_date, timedelta(days=0))
 
 
 def discount_rate(with_rate, with_maturity, days_in_year=365):
