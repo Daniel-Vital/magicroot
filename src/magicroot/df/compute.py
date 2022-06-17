@@ -70,62 +70,36 @@ def date_perc(df, dt_begin, dt_end, dt_ref, duration_column='duration_pct',  *ar
     )
 
 
-def maturity(df, ref_dt_column, cashflow_dt_column, maturity_column='maturity'):
+def maturity(from_date, to_date):
     """
     Computes maturity
-    :param df: Dataframe
-        :column ref_dt_column: column(s) should be in the table
-        :column cashflow_dt_column: column(s) should be in the table
-    base to compute
+    :param from_date: str
+    Series with the begin date
 
-    :param ref_dt_column: str
-    column with the reference date
+    :param to_date: str
+    Series with the end date
 
-    :param cashflow_dt_column: str
-    column with the cashflow date
-
-    :param maturity_column: str, default 'maturity'
-    column with the name to give to the column with the computed maturity
-
-    :return: Dataframe
-        :column previous: all column(s) previously in the table
-        :column maturity_column: computed column
-    result table
+    :return: func to be applied to a Dataframe
     """
-    return format.as_date(df, [ref_dt_column, cashflow_dt_column]).assign(
-        **{
-            maturity_column: lambda x: np.maximum((x[cashflow_dt_column] - x[ref_dt_column]).dt.days / 365, 0)
-        }
-    )
+    return np.maximum(to_date - from_date, timedelta(days=0))
 
 
-def discount_rate(df, rate_column, maturity_column, disc_rate_column='disc_rate'):
+def discount_rate(with_rate, with_maturity, days_in_year=365):
     """
     Computes discount rate
-    :param df: Dataframe
-        :column ref_dt_column: column(s) should be in the table
-        :column cashflow_dt_column: column(s) should be in the table
-    base to compute
 
-    :param rate_column: str
-    column with the spot rate
+    :param with_rate: str
+    Series with the spot rate
 
-    :param maturity_column: str
-    column with the maturity
+    :param with_maturity: str
+    Series with the maturity
 
-    :param disc_rate_column: str, default 'disc_rate'
-    column with the name to give to the column with the computed discount rate
+    :param days_in_year: int
+    constant with the days in the year
 
-    :return: Dataframe
-        :column previous: all column(s) previously in the table
-        :column disc_rate_column: computed column
-    result table
+    :return: func to be applied to a Dataframe
     """
-    return df.assign(
-        **{
-            disc_rate_column: lambda x: 1 / (x[rate_column] + 1).pow(x[maturity_column])
-        }
-    )
+    return lambda x: 1 / (1 + with_rate).pow(with_maturity.dt.days / days_in_year)
 
 
 def discounted_cashflows(df, cashflow_columns, disc_rate_column, prefix='disc_', suffix=''):

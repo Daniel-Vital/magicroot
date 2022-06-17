@@ -5,38 +5,35 @@ log = logging.getLogger(__name__)
 
 
 def cashflows(
-        df_cashflows,
-        ref_dt_column,
-        cashflow_dt_column,
-        rate_column,
-        cashflow_columns,
-        maturity_column=None,
-        disc_rate_column=None,
-        discounted_prefix=None,
-        component_prefix=None
+        cashflows, from_date, to_date, with_rate
 ):
     """
-    Merges cashflows and discount rates tables, and calls with_single_table to discount cashflows
-    :param df_cashflows: Dataframe
-        :column on: column(s) should be in the table
-    to be discounted
+    Discounts cashflows
+    :param df: Dataframe
+        :column cashflow_columns: column(s) should be in the table
+        :column disc_rate_column: column(s) should be in the table
+    base to compute
 
-    :param df_discount_rates: Dataframe
-        :column on: column(s) should be in the table
-    with discount rates
+    :param cashflow_columns: list
+    containing columns with cashflows to discount
 
-    :param on: str
-    See pandas.DataFrame.merge parameter on
+    :param disc_rate_column: str
+    Column with the discount rate
 
-    :return: See with_single_table
+    :param prefix: str, default 'disc_'
+    column with the prefix to add to the column names with the discounted cashflows
+
+    :param suffix: str, default ''
+    column with the suffix to add to the column names with the discounted cashflows
+
+    :return: Dataframe
+        :column previous: all column(s) previously in the table
+        :column prefix + cashflow_columns: computed columns
+    result table
     """
-    df_cashflows = compute.maturity(df_cashflows, ref_dt_column, cashflow_dt_column, maturity_column)
-    df_cashflows = compute.discount_rate(df_cashflows, rate_column, maturity_column, disc_rate_column)
-    df_cashflows = compute.discounted_cashflows(df_cashflows, cashflow_columns, disc_rate_column, discounted_prefix)
-    discounted_columns_pairs = compute.discounted_columns_pairs(cashflow_columns, discounted_prefix)
-    df_cashflows = compute.discounted_components(df_cashflows, discounted_columns_pairs, component_prefix)
-
-    return df_cashflows
+    return cashflows * compute.discount_rate(
+        with_rate=with_rate, with_maturity=compute.maturity(from_date=from_date, to_date=to_date)
+    )
 
 
 def by_cashflow_date(
