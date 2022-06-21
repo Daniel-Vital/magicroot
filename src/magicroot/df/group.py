@@ -9,3 +9,9 @@ def sum(columns, by):
         x[by], how='right', validate='one_to_many'
     )[columns]
 
+
+def max(columns, by):
+    return lambda x: x[by + columns].groupby(by).max().reset_index().merge(
+        x[by], how='right', validate='one_to_many'
+    )[columns]
+
