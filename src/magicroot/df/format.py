@@ -39,3 +39,40 @@ def as_set_len_code(df, columns=None):
     for column, lenght in columns.items():
         df = with_func(df, [column], lambda x, col: x[col].astype(str).str.zfill(lenght))
     return df
+
+
+def as_float(df, columns=None):
+    """
+    Tranforms the given columns into floats
+    :param df: Table to be transformed
+    :param columns: dict
+    columns to be transformed as keys, lenght of expected results as values
+    :param lenght: columns to be transformed
+    :return:
+    """
+    for column, lenght in columns.items():
+        df = with_func(df, [column], lambda x, col: x[col].astype(float))
+    return df
+
+
+def as_string(df, columns=None):
+    """
+    Tranforms the given columns into strings
+    :param df: Table to be transformed
+    :param columns: dict
+    columns to be transformed as keys, lenght of expected results as values
+    :param lenght: columns to be transformed
+    :return:
+    """
+    for column, lenght in columns.items():
+        df = with_func(df, [column], lambda x, col: x[col].astype(str))
+    return df
+
+
+def all(df, as_strings=None, as_floats=None, as_set_len_codes=None, as_dates=None):
+    df = as_string(df, columns=as_strings)
+    df = as_float(df, columns=as_floats)
+    df = as_set_len_code(df, columns=as_set_len_codes)
+    df = as_date(df, columns=as_dates)
+
+    return df
